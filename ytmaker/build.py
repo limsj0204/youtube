@@ -6,6 +6,7 @@
     python -m ytmaker.build ... --preview 12.5    # 해당 시점 한 프레임만 PNG로
 """
 import argparse
+import re
 import subprocess
 import sys
 import time
@@ -24,13 +25,19 @@ FPS = 30
 LEAD, GAP, TAIL = 0.6, 0.55, 1.1   # 장면 시작 여백, 문장 사이 간격, 장면 끝 여백(초)
 
 
+def smart_quotes(t):
+    """자막의 곧은 따옴표를 둥근 따옴표로 (화면 글자와 맞추기)."""
+    t = re.sub(r"'([^']*)'", "\u2018\\1\u2019", t)
+    return re.sub(r'"([^"]*)"', "\u201c\\1\u201d", t)
+
+
 def sentences(scene):
     out = []
     for s in scene.get("say", []) or []:
         if isinstance(s, str):
-            out.append({"say": s, "sub": s})
+            out.append({"say": s, "sub": smart_quotes(s)})
         else:
-            out.append({"say": s["say"], "sub": s.get("sub", s["say"])})
+            out.append({"say": s["say"], "sub": smart_quotes(s.get("sub", s["say"]))})
     return out
 
 
