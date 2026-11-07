@@ -172,9 +172,9 @@ class Title(Scene):
                 k = appear(c.t, 1.3 + i * 0.35, 0.5)
                 fx = L.cx - total / 2 + fw / 2 + i * (fw + gap)
                 A.place(img, "flag:" + code, (fx, fy + (1 - k) * 20), fw, k)
-                if i + 1 < len(flags) and appear(c.t, 1.5 + i * 0.35, 0.4) > 0:
-                    S.arrow(dr, (fx + fw / 2 + 18 * L.s, fy), (fx + fw / 2 + gap - 18 * L.s, fy),
-                            S.ACCENT, max(3, int(5 * L.s)), head=int(18 * L.s))
+                k2 = appear(c.t, 1.5 + i * 0.35, 0.4)
+                if i + 1 < len(flags) and k2 > 0:
+                    S.draw_arrow(img, (fx + fw / 2 + 20 * L.s, fy), (gap - 40 * L.s) * k2, S.ACCENT, 50 * L.s)
         if d.get("ship"):
             p = c.t / max(1.0, c.dur)
             A.place(img, d["ship"], (lerp_(-150, L.W + 150, p), L.H - (420 if L.short else 150) * L.s
@@ -276,12 +276,11 @@ class Chain(Scene):
                 k = S.ease_out(shown[i + 1])
                 nx, ny, nw, nh = boxes[i + 1]
                 if L.short:
-                    p0 = (L.cx, by + bh + 10 * L.s)
-                    p1 = (L.cx, p0[1] + (ny - by - bh - 20 * L.s) * k)
+                    p0 = (L.cx, by + bh + 14 * L.s)
+                    S.draw_arrow(img, p0, max(1, (ny - by - bh - 28 * L.s) * k), S.ACCENT, 56 * L.s, "down")
                 else:
-                    p0 = (bx + bw + 12 * L.s, by + bh / 2 - off)
-                    p1 = (p0[0] + (nx - bx - bw - 24 * L.s) * k, p0[1])
-                S.arrow(dr, p0, p1, S.ACCENT, max(3, int(6 * L.s)), head=int(22 * L.s))
+                    p0 = (bx + bw + 16 * L.s, by + bh / 2 - off)
+                    S.draw_arrow(img, p0, max(1, (nx - bx - bw - 32 * L.s) * k), S.ACCENT, 56 * L.s)
         if d.get("note"):
             a = c.p(d.get("note_at", len(c.sents) - 1), 0.6)
             y = (boxes[-1][1] + boxes[-1][3] + 70 * L.s) if L.short else (boxes[0][1] + ch + 80 * L.s)
@@ -484,7 +483,47 @@ class Timeline(Scene):
 
 
 class Theories(Scene):
-    """정설이 없을 때: 여러 설을 나란히 보여주고 '정설 없음' 도장을 찍는다."""
+    """여러 설을 카드로 나란히 보여준다. 정설이 없으면 '정설 없음' 도장.
+
+    cards:
+      - label: 유력한 설
+        head: 카스티야의 과자
+        chain: [bolo de Castella, カステイラ, カステラ]   # 선택: 세로로 쌓고 화살표로 잇는다
+        body: "옛 일본 문헌에 남은 이름과도\n이어진다"      # \n 으로 줄바꿈 위치 지정 가능
+    """
+
+    def _layout(self, card, bw):
+        """카드 안 요소들의 위치와 전체 높이 계산."""
+        L = self.L
+        s = L.s
+        pad = 44 * s
+        items = []
+        y = pad + 18 * s
+        items.append(("label", y))
+        y += 62 * s
+        hs = 62 * s
+        while hs > 24 and S.text_size(card["head"], font("serif_bold", hs))[0] > bw - pad * 2:
+            hs -= 2
+        items.append(("head", y, hs))
+        y += hs * 0.5 + 34 * s
+        items.append(("rule", y))
+        y += 40 * s
+        if card.get("chain"):
+            fc = font("sans_bold", 36 * s)
+            for k, word in enumerate(card["chain"]):
+                y += 22 * s
+                items.append(("chain", y, word, fc, k))
+                y += 22 * s
+                if k + 1 < len(card["chain"]):
+                    items.append(("down", y + 8 * s))
+                    y += 52 * s
+            y += 30 * s
+        fb = font("sans", 34 * s)
+        for line in S.wrap(card.get("body", ""), fb, bw - pad * 2):
+            y += 26 * s
+            items.append(("body", y, line, fb))
+            y += 26 * s
+        return items, y + pad, pad
 
     def draw(self, img, c):
         L, d = self.L, self.d
@@ -492,50 +531,75 @@ class Theories(Scene):
         n = len(cards)
         self.title(img, c, d.get("title"))
         x0, y0, w, h = L.stage
-        top = y0 + 150 * L.s
+        top = y0 + 130 * L.s
+        avail = y0 + h - 20 * L.s - top
         if L.short:
-            gap = 40 * L.s
-            ch = (h - 170 * L.s - gap * (n - 1)) / n
-            boxes = [(x0, top + i * (ch + gap), w, ch) for i in range(n)]
+            gap = 36 * L.s
+            bw = w
+            lays = [self._layout(cd, bw) for cd in cards]
+            total = sum(l[1] for l in lays) + gap * (n - 1)
+            y = top + max(0, (avail - total) / 2)
+            boxes = []
+            for lay in lays:
+                boxes.append((x0, y, bw, lay[1]))
+                y += lay[1] + gap
         else:
-            gap = 50
-            cw = (w - gap * (n - 1)) / n
-            boxes = [(x0 + i * (cw + gap), top, cw, h - 200) for i in range(n)]
-        for i, (card, (bx, by, bw, bh)) in enumerate(zip(cards, boxes)):
+            gap = 44
+            bw = (w - gap * (n - 1)) / n
+            lays = [self._layout(cd, bw) for cd in cards]
+            ch = max(l[1] for l in lays)
+            y = top + max(0, (avail - ch) / 2)
+            boxes = [(x0 + i * (bw + gap), y, bw, ch) for i in range(n)]
+
+        for i, (card, (bx, by, bw_, bh), (items, _, pad)) in enumerate(zip(cards, boxes, lays)):
             a = c.p(card.get("at", i), 0.5)
             if a <= 0:
                 continue
             by += (1 - a) * 40 * L.s
-            S.rounded_box(img, (bx, by, bx + bw, by + bh), int(22 * L.s), S.CARD, S.CARD_EDGE,
+            S.rounded_box(img, (bx, by, bx + bw_, by + bh), int(22 * L.s), S.CARD, S.CARD_EDGE,
                           width=3, alpha=a)
-            draw_text(img, (bx + 40 * L.s, by + 60 * L.s), card["label"], font("sans_bold", 32 * L.s),
-                      S.ACCENT, a, anchor="lm")
-            hs = 64 * L.s
-            while hs > 24 and S.text_size(card["head"], font("serif_bold", hs))[0] > bw - 80 * L.s:
-                hs -= 2
-            draw_text(img, (bx + 40 * L.s, by + 130 * L.s), card["head"],
-                      font("serif_bold", hs), S.INK, a, anchor="lm")
-            fb = font("sans", 36 * L.s)
-            for k, line in enumerate(S.wrap(card.get("body", ""), fb, bw - 80 * L.s)):
-                draw_text(img, (bx + 40 * L.s, by + 210 * L.s + k * 52 * L.s), line, fb, S.MUTED, a,
-                          anchor="lm")
+            lx = bx + pad
+            for it in items:
+                kind, yy = it[0], by + it[1]
+                if kind == "label":
+                    draw_text(img, (lx, yy), card["label"], font("sans_bold", 30 * L.s), S.ACCENT, a,
+                              anchor="lm")
+                elif kind == "head":
+                    draw_text(img, (lx, yy), card["head"], font("serif_bold", it[2]), S.INK, a, anchor="lm")
+                elif kind == "rule":
+                    ImageDraw.Draw(img).line([(lx, yy), (bx + bw_ - pad, yy)],
+                                             fill=S.mix(S.CARD, S.MUTED, 0.5 * a), width=max(1, int(2 * L.s)))
+                elif kind == "chain":
+                    last = it[4] == len(card["chain"]) - 1
+                    draw_text(img, (lx, yy), it[2], it[3], S.INK if last else S.MUTED, a, anchor="lm")
+                elif kind == "down":
+                    S.draw_arrow(img, (lx + 18 * L.s, yy), 30 * L.s, S.ACCENT, 36 * L.s, "down", alpha=a)
+                elif kind == "body":
+                    draw_text(img, (lx, yy), it[2], it[3], S.MUTED, a, anchor="lm")
         st = d.get("stamp")
         if st:
             a = c.p(st.get("at", n), 0.35)
             if a > 0:
                 scale = 1.6 - 0.6 * a
-                f = font("serif_bold", 96 * L.s * scale)
+                f = font("serif_bold", 64 * L.s * scale)
                 tw, th = S.text_size(st["text"], f)
                 pad = 40 * L.s
                 layer = Image.new("RGBA", (int(tw + pad * 2), int(th + pad * 2.2)), (0, 0, 0, 0))
                 ld = ImageDraw.Draw(layer)
-                ld.rounded_rectangle((6, 6, layer.width - 6, layer.height - 6), int(18 * L.s),
+                ld.rounded_rectangle((6, 6, layer.width - 6, layer.height - 6),
+                                     int(18 * L.s * S.opt("radius", 1.0)),
                                      outline=S.RED + (255,), width=int(9 * L.s * scale))
-                ld.text((layer.width / 2, layer.height / 2), st["text"], font=f,
-                        fill=S.RED + (255,), anchor="mm")
+                S.draw_text(layer, (layer.width / 2, layer.height / 2), st["text"], f, S.RED)
                 layer = layer.rotate(-8, expand=True, resample=Image.BICUBIC)
                 layer.putalpha(layer.getchannel("A").point(lambda v: int(v * a * 0.95)))
-                cx, cy = L.cx, (boxes[-1][1] + boxes[-1][3] * 0.55) if L.short else top + (h - 200) * 0.72
+                bx0, by0 = boxes[0][0], boxes[0][1]
+                # 제목 오른쪽에 (카드 내용과 자막을 가리지 않도록)
+                tf = font("sans_bold", 54 * L.s)
+                tw2 = S.text_size(d.get("title", ""), tf)[0]
+                if L.short:
+                    cx, cy = L.cx, boxes[-1][1] + boxes[-1][3] + 70 * L.s
+                else:
+                    cx, cy = L.cx + tw2 / 2 + 60 * L.s + layer.width / 2, y0 + 40 * L.s
                 img.paste(layer, (int(cx - layer.width / 2), int(cy - layer.height / 2)), layer)
 
 
@@ -567,11 +631,12 @@ class Summary(Scene):
                 wx += 110 * L.s
             draw_text(img, (wx, y), row["word"], font("serif_bold", 64 * L.s),
                       S.ACCENT, a, anchor="lm")
-            f = font("sans", 38 * L.s)
-            path = row["path"]
-            while S.text_size(path, f)[0] > (bx1 - bx0) * 0.62 and f.size > 18:
-                f = font("sans", f.size - 2)
-            draw_text(img, (bx1 - 50 * L.s + off, y), path, f, S.INK, a, anchor="rm")
+            size = 38 * L.s
+            parts = S.path_parts(row["path"])
+            while S.path_width(parts, font("sans", size), size) > (bx1 - bx0) * 0.62 and size > 18:
+                size -= 2
+            S.draw_path(img, (bx1 - 50 * L.s + off, y), row["path"], font("sans", size), S.INK, size,
+                        a, anchor="rm", arrow_color=S.ACCENT)
 
 
 class Sources(Scene):

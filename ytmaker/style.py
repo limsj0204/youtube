@@ -201,10 +201,9 @@ def draw_text(img, xy, s, fnt, fill=None, alpha=1.0, anchor="mm", dy=0.0, shadow
     img.paste(layer, (box[0], box[1]), layer)
 
 
-def wrap(s, fnt, max_w):
-    """단어(공백) 단위로 줄바꿈. 한 단어가 너무 길면 글자 단위로 자른다."""
+def _greedy(words, fnt, max_w):
     lines, cur = [], ""
-    for word in s.split(" "):
+    for word in words:
         cand = word if not cur else cur + " " + word
         if text_size(cand, fnt)[0] <= max_w:
             cur = cand
@@ -221,6 +220,104 @@ def wrap(s, fnt, max_w):
     if cur:
         lines.append(cur)
     return lines
+
+
+def wrap(s, fnt, max_w, balance=True):
+    """줄바꿈.
+    - 대본의 줄바꿈(\n)은 그대로 지킨다
+    - 화살표(→)는 앞뒤 단어와 붙여서 줄 처음이나 끝에 혼자 남지 않게 한다
+    - balance: 줄 수는 그대로 두고 줄 길이를 고르게 (마지막 줄에 한두 단어만 남는 것 방지)
+    """
+    out = []
+    for para in str(s).split("\n"):
+        words = para.split(" ")
+        glued = []
+        for wd in words:
+            if glued and (wd == "→" or glued[-1].endswith("→")):
+                glued[-1] = glued[-1] + "\u00a0" + wd
+            else:
+                glued.append(wd)
+        # 붙인 덩어리가 한 줄보다 길면 화살표 앞에서 끊을 수 있게 다시 푼다
+        fixed = []
+        for g in glued:
+            if "\u00a0" in g and text_size(g.replace("\u00a0", " "), fnt)[0] > max_w:
+                bits = g.split("\u00a0")
+                cur = bits[0]
+                for b in bits[1:]:
+                    if b == "→":
+                        fixed.append(cur)
+                        cur = b
+                    else:
+                        cur += "\u00a0" + b
+                fixed.append(cur)
+            else:
+                fixed.append(g)
+        glued = fixed
+        lines = _greedy(glued, fnt, max_w)
+        if balance and len(lines) > 1:
+            lo, hi = max_w * 0.4, max_w
+            for _ in range(12):
+                mid = (lo + hi) / 2
+                if len(_greedy(glued, fnt, mid)) <= len(lines):
+                    hi = mid
+                else:
+                    lo = mid
+            lines = _greedy(glued, fnt, hi)
+        out += [ln.replace("\u00a0", " ") for ln in lines]
+    return out
+
+
+def draw_arrow(img, start, length, color, size, direction="right", alpha=1.0):
+    """글자 대신 직접 그리는 깔끔한 화살표. size = 글자 크기 기준 두께."""
+    if alpha <= 0.01:
+        return
+    w = max(2, int(size * 0.09))
+    head = size * 0.32
+    x, y = start
+    layer = Image.new("RGBA", img.size if False else (int(length + head * 2 + 8), int(length + head * 2 + 8)),
+                      (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    c = color + (int(255 * alpha),)
+    o = head + 4
+    if direction == "right":
+        p0, p1 = (o, o), (o + length, o)
+        d.line([p0, (p1[0] - w * 0.5, p1[1])], fill=c, width=w)
+        d.line([(p1[0] - head, p1[1] - head), p1, (p1[0] - head, p1[1] + head)], fill=c, width=w,
+               joint="curve")
+        img.paste(layer, (int(x - o), int(y - o)), layer)
+    else:  # down
+        p0, p1 = (o, o), (o, o + length)
+        d.line([p0, (p1[0], p1[1] - w * 0.5)], fill=c, width=w)
+        d.line([(p1[0] - head, p1[1] - head), p1, (p1[0] + head, p1[1] - head)], fill=c, width=w,
+               joint="curve")
+        img.paste(layer, (int(x - o), int(y - o)), layer)
+
+
+def path_parts(text):
+    return [p.strip() for p in str(text).split("→")]
+
+
+def path_width(parts, fnt, size):
+    arrow_w = size * 0.9
+    return sum(text_size(p, fnt)[0] for p in parts) + (len(parts) - 1) * (arrow_w + size * 0.7)
+
+
+def draw_path(img, xy, text, fnt, color, size, alpha=1.0, anchor="lm", arrow_color=None):
+    """'A → B → C' 를 글자 화살표 대신 그린 화살표로."""
+    parts = path_parts(text)
+    total = path_width(parts, fnt, size)
+    x, y = xy
+    if anchor[0] == "r":
+        x -= total
+    elif anchor[0] == "m":
+        x -= total / 2
+    gap = size * 0.35
+    for i, p in enumerate(parts):
+        draw_text(img, (x, y), p, fnt, color, alpha, anchor="lm")
+        x += text_size(p, fnt)[0]
+        if i + 1 < len(parts):
+            draw_arrow(img, (x + gap, y + size * 0.04), size * 0.9, arrow_color or color, size, alpha=alpha)
+            x += size * 0.9 + gap * 2
 
 
 def rounded_box(img, box, radius, fill, outline=None, width=2, alpha=1.0):
