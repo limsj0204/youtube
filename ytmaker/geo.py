@@ -103,3 +103,47 @@ def base_map(size, proj, highlight=(), ss=2):
             d.polygon([(x * ss, y * ss) for x, y in pts], fill=fill + (255,),
                       outline=S.LAND_EDGE + (255,))
     return big.resize((w, h), Image.LANCZOS)
+
+
+def _in_ring(lon, lat, ring):
+    inside = False
+    j = len(ring) - 1
+    for i in range(len(ring)):
+        xi, yi = ring[i]
+        xj, yj = ring[j]
+        if (yi > lat) != (yj > lat) and lon < (xj - xi) * (lat - yi) / (yj - yi) + xi:
+            inside = not inside
+        j = i
+    return inside
+
+
+@lru_cache(maxsize=1)
+def _ring_boxes():
+    out = []
+    for name, rings in countries().items():
+        for r in rings:
+            xs = [p[0] for p in r]
+            ys = [p[1] for p in r]
+            out.append((min(xs), max(xs), min(ys), max(ys), r, name))
+    return out
+
+
+def land_at(lon, lat):
+    """해당 지점이 육지면 나라 이름, 바다면 None."""
+    for x0, x1, y0, y1, r, name in _ring_boxes():
+        if x0 <= lon <= x1 and y0 <= lat <= y1 and _in_ring(lon, lat, r):
+            return name
+    return None
+
+
+def land_crossings(path, skip_deg=0.8):
+    """항로(경도,위도 목록) 중 육지 위를 지나는 점들. 출발/도착 항구 주변은 제외."""
+    a, b = path[0], path[-1]
+    bad = []
+    for lon, lat in path:
+        if math.dist((lon, lat), a) < skip_deg or math.dist((lon, lat), b) < skip_deg:
+            continue
+        name = land_at(lon, lat)
+        if name:
+            bad.append((round(lon, 1), round(lat, 1), name))
+    return bad

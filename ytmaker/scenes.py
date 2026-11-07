@@ -4,6 +4,7 @@
 `draw(img, c)` 로 매 프레임을 그린다. c 는 Clock (장면 안 시간 + 문장 타이밍).
 """
 import math
+import warnings
 
 from PIL import Image, ImageDraw
 
@@ -259,8 +260,13 @@ class Map(Scene):
         self.base.paste(Image.new("RGBA", (L.W, L.H), S.BG_BOTTOM + (255,)), (0, 0), shade)
         self.routes = []
         for r in d.get("routes", []):
-            pts = [self.proj(lon, lat) for lon, lat in r["via"]]
-            pts = _smooth(pts)
+            ll = _smooth([tuple(v) for v in r["via"]])
+            if not r.get("overland"):
+                bad = geo.land_crossings(ll)
+                if bad:
+                    warnings.warn(f"항로 '{d.get('title', '')}'가 육지를 지납니다 "
+                                  f"(경유점을 바다 쪽으로 옮기세요): {bad[:5]}")
+            pts = [self.proj(lon, lat) for lon, lat in ll]
             seg = [math.dist(pts[i], pts[i + 1]) for i in range(len(pts) - 1)]
             self.routes.append((r, pts, seg, sum(seg)))
 
@@ -312,12 +318,9 @@ class Map(Scene):
         if d.get("title"):
             f = font("sans_bold", 46 * L.s)
             a = appear(c.t, 0.1, 0.6)
-            if L.short:
-                pos = (L.W / 2, 300)
-                anchor = "mm"
-            else:
-                pos = (80, 70)
-                anchor = "lm"
+            # 가운데 위: 지도 가장자리의 지명 핀을 가리지 않도록
+            pos = (L.W / 2, 300 if L.short else 70)
+            anchor = "mm"
             tw, th = S.text_size(d["title"], f)
             bx = pos[0] - (tw / 2 if anchor == "mm" else 0)
             S.rounded_box(img, (bx - 24, pos[1] - th / 2 - 18, bx + tw + 24, pos[1] + th / 2 + 18),
