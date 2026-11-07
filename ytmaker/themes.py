@@ -67,6 +67,25 @@ THEMES = {
         "vignette": 0, "sub_alpha": 1.0,
     },
 
+    # 매거진 반전: 검정 바탕, 흰 글씨, 빨강 한 색
+    "magazine_dark": {
+        "label": "매거진 (반전)",
+        "colors": dict(BG_TOP=(16, 16, 16), BG_BOTTOM=(12, 12, 12), INK=(245, 245, 242),
+                       MUTED=(150, 150, 150), ACCENT=(240, 62, 50), ACCENT2=(90, 140, 255),
+                       RED=(240, 62, 50), LAND=(40, 40, 40), LAND_EDGE=(80, 80, 80),
+                       LAND_HI=(110, 40, 34), CARD=(22, 22, 22), CARD_EDGE=(245, 245, 242),
+                       ON_ACCENT=(255, 255, 255), SUB_BOX=(245, 245, 242), SUB_INK=(16, 16, 16),
+                       GRID=(255, 255, 255)),
+        "fonts": {
+            "sans": (_A + "Pretendard-Regular.otf", 0, 1.0),
+            "sans_bold": (_A + "Pretendard-Bold.otf", 0, 1.0),
+            "serif": (_A + "Pretendard-Regular.otf", 0, 1.0),
+            "serif_bold": (_A + "Pretendard-Black.otf", 0, 1.0),
+        },
+        "tag_ink": (16, 16, 16), "bg": "flat", "radius": 0.0, "border": 1.6, "glow": 0.0,
+        "text_shadow": False, "vignette": 0, "sub_alpha": 1.0,
+    },
+
     # 팝: 노란 바탕, 굵은 검정 테두리, 딱딱한 그림자
     "pop": {
         "label": "팝·코믹",

@@ -62,6 +62,7 @@ python3 -m ytmaker.build episodes/001_portuguese_words/script.yaml --preview
 | `midnight` | 짙은 남색, 호박색 (처음 버전) |
 | `dictionary` | 누런 종이, 먹색 명조체, 붉은 도장 |
 | `magazine` | 흰 바탕, 굵은 고딕, 빨강 한 색 |
+| `magazine_dark` | 매거진의 흑백 반전 (검정 바탕, 흰 글씨) |
 | `pop` | 노란 바탕, 굵은 검정 테두리, 딱딱한 그림자 |
 | `chalk` | 칠판, 손글씨 |
 | `blueprint` | 파란 모눈종이, 고정폭 글씨 |
