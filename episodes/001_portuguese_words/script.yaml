@@ -55,15 +55,14 @@ scenes:
   - type: intro
     name: 단어언박싱
     accent_from: 2
-    tagline: 단어 속에 숨은 이야기를 꺼내 봅니다
-    hold: 4.4
+    hold: 3.3
 
   - type: title
     title: 포르투갈에서 온 단어들
     subtitle: 빵 · 카스텔라 · 담배
     flags: [pt, jp, kr]
     ship: custom:carrack
-    hold: 5.5
+    hold: 3.4
 
   # ================================================================ 1. 빵
   - type: chapter

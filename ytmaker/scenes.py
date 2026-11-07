@@ -176,7 +176,7 @@ class Title(Scene):
                 if i + 1 < len(flags) and k2 > 0:
                     S.draw_arrow(img, (fx + fw / 2 + 20 * L.s, fy), (gap - 40 * L.s) * k2, S.ACCENT, 50 * L.s)
         if d.get("ship"):
-            p = c.t / max(1.0, c.dur)
+            p = S.clamp((c.t - 0.1) / min(2.4, max(1.0, c.dur - 0.3)))
             A.place(img, d["ship"], (lerp_(-150, L.W + 150, p), L.H - (420 if L.short else 150) * L.s
                                      + bob(c.t, 0, 5 * L.s)), 200 * L.s, 0.9)
 
@@ -743,135 +743,138 @@ class Tableau(Scene):
 
 
 class Intro(Scene):
-    """채널 인트로: 상자가 떨어져 튕기고, 흔들리다 열리면서 채널 이름 글자가 하나씩 튀어나온다.
+    """채널 인트로 (위에서 내려다본 상자).
+    닫힌 상자 → 커터칼이 테이프를 따라 자름 → 날개가 양옆으로 젖혀짐
+    → 상자 안에 채널 이름 → 그 안으로 끝없이 줌인하며 다음 장면으로.
 
     - type: intro
-      name: 단어언박싱           # 글자마다 하나씩 튀어나옴
-      accent_from: 2             # 이 글자부터 강조색 (단어 / 언박싱)
-      tagline: 단어 속에 숨은 이야기를 꺼내 봅니다
-      hold: 4.4
+      name: 단어언박싱
+      accent_from: 2      # 이 글자부터 강조색
+      hold: 3.3
     """
-    LAND, WIGGLE, OPEN, LETTER0, STEP = 0.55, 0.85, 1.2, 1.5, 0.16
-    KRAFT, KRAFT_DARK, KRAFT_LIGHT = (196, 140, 86), (160, 110, 64), (214, 162, 106)
+    APPEAR, CUT0, CUT1, OPEN0, OPEN1, TITLE, ZOOM = 0.0, 0.3, 1.0, 1.05, 1.5, 1.35, 1.95
+    KRAFT, KRAFT_DARK, KRAFT_IN = (198, 146, 92), (150, 104, 60), (222, 184, 132)
+    TAPE = (226, 204, 160)
 
     @classmethod
-    def timing(cls, n):
-        letters = [cls.LETTER0 + k * cls.STEP for k in range(n)]
-        return {"land": cls.LAND, "open": cls.OPEN, "letters": letters, "done": letters[-1] + 0.4}
+    def timing(cls, n=0):
+        return {"cut": (cls.CUT0, cls.CUT1), "open": cls.OPEN0, "title": cls.TITLE, "zoom": cls.ZOOM}
 
     def prepare(self, L):
         super().prepare(L)
-        self.chars = list(self.d.get("name", "단어언박싱"))
-        f = font("serif_bold", 180 * L.s)
-        widths = [S.text_size(ch, f)[0] for ch in self.chars]
-        gap = 8 * L.s
-        total = sum(widths) + gap * (len(widths) - 1)
-        x = L.cx - total / 2
-        self.targets = []
-        for w in widths:
-            self.targets.append(x + w / 2)
-            x += w + gap
-
-    def _box(self, open_k, s):
-        """상자 그림 (RGBA). 아래 가운데가 기준점."""
-        bw, bh, th = 520 * s, 350 * s, 32 * s
-        W, H = int(bw * 2.6), int(bh * 3.2)
-        im = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-        d = ImageDraw.Draw(im)
-        bx0, by1 = (W - bw) / 2, H - 10
-        by0 = by1 - bh
-        # 몸통 + 오른쪽 그늘 + 테이프 + 라벨
-        d.rectangle((bx0, by0, bx0 + bw, by1), fill=self.KRAFT)
-        d.rectangle((bx0 + bw * 0.82, by0, bx0 + bw, by1), fill=self.KRAFT_DARK)
-        d.rectangle((bx0 + bw * 0.44, by0, bx0 + bw * 0.56, by0 + bh * 0.42), fill=S.mix(self.KRAFT, (255, 255, 255), 0.35))
-        lx0, ly0 = bx0 + bw * 0.2, by0 + bh * 0.52
-        d.rounded_rectangle((lx0, ly0, lx0 + bw * 0.5, ly0 + bh * 0.3), int(8 * s), fill=(245, 242, 235))
-        f = font("sans_bold", 40 * s)
-        d.text((lx0 + bw * 0.25, ly0 + bh * 0.15), "FRAGILE", font=f, fill=S.ACCENT, anchor="mm")
-        # 날개: 왼쪽은 왼쪽 모서리, 오른쪽은 오른쪽 모서리를 축으로 열린다
-        ang = math.radians(150 * open_k)
-        for side in (-1, 1):
-            hx = bx0 if side < 0 else bx0 + bw
-            length = bw / 2
-            a = ang if side < 0 else -ang
-            dirx, diry = (-side) * math.cos(a), -abs(math.sin(a))
-            nx, ny = -diry, dirx
-            p1 = (hx, by0)
-            p2 = (hx + dirx * length, by0 + diry * length)
-            pts = [p1, p2, (p2[0] + nx * th * side * -1, p2[1] + ny * th * side * -1),
-                   (p1[0] + nx * th * side * -1, p1[1] + ny * th * side * -1)]
-            d.polygon(pts, fill=self.KRAFT_LIGHT if open_k > 0.02 else self.KRAFT, outline=self.KRAFT_DARK)
-        return im, (W / 2, H - 10), by0 - (H - 10)
+        self.bw = min(980 * L.s, L.W * 0.84)
+        self.bh = self.bw * 0.62
+        self.name = self.d.get("name", "단어언박싱")
+        k = self.d.get("accent_from", 2)
+        self.parts = (self.name[:k], self.name[k:])
+        # 바닥 안쪽 폭에 맞는 제목 크기 (확대 전 기준)
+        inner = self.bw - 2 * 90 * L.s
+        size = 200 * L.s
+        while size > 40 and S.text_size(self.name, font("serif_bold", size))[0] > inner * 0.86:
+            size -= 4
+        self.title_size = size
 
     def draw(self, img, c):
-        L, d, s, t = self.L, self.d, self.L.s, c.t
-        floor = L.cy + 330 * s
-        # 떨어지기 → 튕기기
-        if t < self.LAND:
-            k = (t / self.LAND) ** 2
-            dy = -(L.H * 0.9) * (1 - k)
-        elif t < self.LAND + 0.32:
-            dy = -46 * s * math.sin(math.pi * (t - self.LAND) / 0.32)
-        else:
-            dy = 0
-        # 흔들기
-        rot = 0.0
-        if self.WIGGLE <= t < self.OPEN:
-            k = (t - self.WIGGLE) / (self.OPEN - self.WIGGLE)
-            rot = 7 * math.sin(k * math.pi * 4) * (1 - k)
-        # 열기 (살짝 넘쳤다 돌아오는 움직임)
-        ok = 0.0
-        if t >= self.OPEN:
-            x = S.clamp((t - self.OPEN) / 0.35)
-            c1 = 1.70158
-            ok = 1 + (c1 + 1) * (x - 1) ** 3 + c1 * (x - 1) ** 2
-        box, anchor, top_off = self._box(ok, s)
-        if rot:
-            box = box.rotate(rot, resample=Image.BICUBIC, center=anchor)
-        mouth = (L.cx, floor + top_off)
-        # 상자 안에서 새어 나오는 빛과 빛줄기
-        if ok > 0:
-            S.glow(img, mouth, 260 * s, S.ACCENT, 0.7 * min(1, ok))
-            dr = ImageDraw.Draw(img)
-            ray_k = S.clamp((t - self.OPEN) / 0.9)
-            fade = 1 - S.clamp((t - self.OPEN - 0.6) / 0.8)
-            if fade > 0:
-                for i in range(11):
-                    ang = math.radians(-170 + i * 16)
-                    r0, r1 = 60 * s, (80 + 230 * ray_k) * s
-                    col = S.mix(S.BG_TOP, S.ACCENT, fade)
-                    dr.line([(mouth[0] + math.cos(ang) * r0, mouth[1] + math.sin(ang) * r0),
-                             (mouth[0] + math.cos(ang) * r1, mouth[1] + math.sin(ang) * r1)],
-                            fill=col, width=max(2, int(5 * s)))
-        # 바닥 그림자 (떨어지는 동안엔 작고 흐리게)
-        near = S.clamp(1 + dy / (L.H * 0.5))
-        sw = 300 * s * (0.5 + 0.5 * near)
-        sh_layer = Image.new("RGBA", (int(sw * 2 + 20), int(60 * s) + 20), (0, 0, 0, 0))
-        ImageDraw.Draw(sh_layer).ellipse((10, 10, 10 + sw * 2, 10 + 40 * s), fill=(0, 0, 0, int(150 * near)))
-        sh_layer = sh_layer.filter(ImageFilter.GaussianBlur(10 * s))
-        img.paste(sh_layer, (int(L.cx - sw - 10), int(floor - 20 * s - 10)), sh_layer)
-        img.paste(box, (int(L.cx - anchor[0]), int(floor - anchor[1] + dy)), box)
-        # 글자가 하나씩 튀어나와 제자리로
-        ty = floor + top_off - 230 * s
-        tim = self.timing(len(self.chars))
-        acc_from = d.get("accent_from", 2)
-        for k, (ch, tx) in enumerate(zip(self.chars, self.targets)):
-            t0 = tim["letters"][k]
-            if t < t0:
+        L, s, t = self.L, self.L.s, c.t
+        cx, cy = L.cx, L.cy + (40 * s if L.short else 10 * s)
+        dur = c.dur
+        # 줌: 제목(상자 가운데)을 향해 점점 빨라지며 확대
+        u = S.clamp((t - self.ZOOM) / max(0.1, dur - self.ZOOM))
+        z = 1 + 26 * u ** 2.6
+        appear_k = S.ease_out((t - self.APPEAR) / 0.3)
+        z *= 0.94 + 0.06 * appear_k
+
+        def P(x, y):
+            return (cx + (x - cx) * z, cy + (y - cy) * z)
+
+        bw, bh = self.bw * z, self.bh * z
+        x0, y0 = cx - bw / 2, cy - bh / 2
+        x1, y1 = x0 + bw, y0 + bh
+        dr = ImageDraw.Draw(img)
+
+        # 그림자 (확대되면 생략)
+        if z < 1.6:
+            sh = Image.new("RGBA", (int(bw + 120 * s), int(bh + 120 * s)), (0, 0, 0, 0))
+            ImageDraw.Draw(sh).rectangle((60 * s, 70 * s, bw + 60 * s, bh + 70 * s),
+                                         fill=(0, 0, 0, int(160 * appear_k)))
+            sh = sh.filter(ImageFilter.GaussianBlur(26 * s))
+            img.paste(sh, (int(x0 - 60 * s), int(y0 - 60 * s)), sh)
+
+        # 상자 안쪽: 네 벽 + 바닥 (위에서 본 깊이감)
+        inset = 90 * s * z
+        ix0, iy0, ix1, iy1 = x0 + inset, y0 + inset, x1 - inset, y1 - inset
+        dr.polygon([(x0, y0), (x1, y0), (ix1, iy0), (ix0, iy0)], fill=(110, 74, 42))      # 위쪽 벽
+        dr.polygon([(x0, y0), (ix0, iy0), (ix0, iy1), (x0, y1)], fill=(92, 62, 36))       # 왼쪽 벽
+        dr.polygon([(x1, y0), (x1, y1), (ix1, iy1), (ix1, iy0)], fill=(76, 50, 28))       # 오른쪽 벽
+        dr.polygon([(x0, y1), (ix0, iy1), (ix1, iy1), (x1, y1)], fill=(64, 42, 24))       # 아래쪽 벽
+        dr.rectangle((ix0, iy0, ix1, iy1), fill=(44, 29, 17))                              # 바닥
+        dr.rectangle((x0, y0, x1, y1), outline=self.KRAFT_DARK, width=max(2, int(10 * s * z)))
+
+        # 바닥의 제목
+        ta = appear(t, self.TITLE, 0.45)
+        if ta > 0:
+            S.glow(img, (cx, cy), min(2000, 420 * s * z), S.ACCENT, 0.5 * ta)
+            size = self.title_size * z * (0.92 + 0.08 * ta)
+            if size < 3000:
+                f = font("serif_bold", size)
+                w1 = S.text_size(self.parts[0], f)[0]
+                w2 = S.text_size(self.parts[1], f)[0]
+                left = cx - (w1 + w2) / 2
+                draw_text(img, (left + w1 / 2, cy), self.parts[0], f, S.INK, ta)
+                draw_text(img, (left + w1 + w2 / 2, cy), self.parts[1], f, S.ACCENT, ta)
+
+        # 날개: 왼쪽은 왼쪽 끝, 오른쪽은 오른쪽 끝을 축으로 바깥으로 젖혀짐 (위에서 본 투영)
+        ok = S.ease_in_out((t - self.OPEN0) / (self.OPEN1 - self.OPEN0))
+        theta = math.pi * ok
+        cosv = math.cos(theta)
+        half = bw / 2
+        tape_w = 120 * s * z
+        for side in (-1, 1):
+            hinge = x0 if side < 0 else x1
+            far = hinge - side * half * cosv          # 날개 끝의 x 위치
+            xa, xb = sorted((hinge, far))
+            if xb - xa < 1:
                 continue
-            x = S.clamp((t - t0) / 0.42)
-            c1 = 1.70158
-            e = 1 + (c1 + 1) * (x - 1) ** 3 + c1 * (x - 1) ** 2   # 살짝 넘쳤다 돌아옴
-            px = mouth[0] + (tx - mouth[0]) * S.clamp(e, 0, 1.2)
-            arc = -math.sin(math.pi * S.clamp(x)) * 70 * s
-            py = mouth[1] + (ty - mouth[1]) * S.clamp(e, 0, 1.2) + arc
-            size = 180 * s * (0.25 + 0.75 * S.clamp(e, 0, 1.15))
-            col = S.ACCENT if k >= acc_from else S.INK
-            draw_text(img, (px, py), ch, font("serif_bold", size), col, min(1, x * 3))
-        if d.get("tagline"):
-            a = appear(t, tim["done"], 0.5)
-            draw_text(img, (L.cx, floor + 70 * s), d["tagline"], font("sans", 42 * s), S.MUTED, a,
-                      dy=(1 - a) * 12)
+            outer = cosv >= 0
+            shade = 0.55 + 0.45 * abs(cosv)
+            base = self.KRAFT if outer else self.KRAFT_IN
+            col = tuple(int(v * shade) for v in base)
+            dr.rectangle((xa, y0, xb, y1), fill=col)
+            if outer:
+                # 이 날개에 붙은 테이프 반쪽 (가운데 이음새 쪽)
+                tw = tape_w / 2 * cosv
+                tx0, tx1 = sorted((far, far + side * tw))
+                dr.rectangle((tx0, y0 - 18 * s * z, tx1, y1 + 18 * s * z), fill=self.TAPE)
+            # 날개 접히는 선
+            dr.line([(hinge, y0), (hinge, y1)], fill=self.KRAFT_DARK, width=max(1, int(4 * s * z)))
+        # 칼집 (테이프 가운데를 따라 위에서 아래로)
+        kk = S.clamp((t - (self.CUT0 - 0.15)) / (self.CUT1 + 0.25 - (self.CUT0 - 0.15)))
+        knife_y = y0 - 220 * s + (bh + 440 * s) * kk
+        if ok < 0.02 and knife_y > y0 - 18 * s * z:
+            yc = min(knife_y, y1 + 18 * s * z)
+            dr.line([(cx, y0 - 18 * s * z), (cx, yc)], fill=(70, 46, 24), width=max(2, int(5 * s * z)))
+        # 커터칼
+        if self.CUT0 - 0.15 <= t <= self.CUT1 + 0.25:
+            self._knife(img, (cx, knife_y), s * 2.1)
+        # 줌 끝: 배경색으로 녹아들며 다음 장면으로
+        if t > dur - 0.35:
+            k = S.clamp((t - (dur - 0.35)) / 0.35)
+            img.paste(Image.blend(img, S.background(L.W, L.H), k))
+
+    def _knife(self, img, tip, s):
+        """커터칼: 날 끝이 tip 에 오도록, 손잡이가 오른쪽 위로."""
+        layer = Image.new("RGBA", (int(520 * s), int(520 * s)), (0, 0, 0, 0))
+        d = ImageDraw.Draw(layer)
+        ox, oy = 60 * s, 340 * s
+        # 날 (은색 사다리꼴) → 손잡이 (강조색)
+        d.polygon([(ox, oy), (ox + 120 * s, oy - 34 * s), (ox + 150 * s, oy + 20 * s), (ox + 30 * s, oy + 26 * s)],
+                  fill=(214, 220, 228))
+        d.line([(ox, oy), (ox + 150 * s, oy + 20 * s)], fill=(160, 168, 178), width=max(1, int(3 * s)))
+        d.rounded_rectangle((ox + 130 * s, oy - 46 * s, ox + 420 * s, oy + 40 * s), int(20 * s), fill=S.ACCENT)
+        d.rounded_rectangle((ox + 170 * s, oy - 30 * s, ox + 380 * s, oy - 8 * s), int(8 * s),
+                            fill=S.mix(S.ACCENT, (255, 255, 255), 0.35))
+        layer = layer.rotate(35, resample=Image.BICUBIC, center=(ox, oy))
+        img.paste(layer, (int(tip[0] - ox), int(tip[1] - oy)), layer)
 
 
 TYPES = {

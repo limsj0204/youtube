@@ -54,13 +54,39 @@ def mix_at(buf, clip, t, sr):
         buf[i:j] += clip[: j - i]
 
 
+def cut(sr, dur):
+    """커터칼로 테이프를 긋는 '지익'."""
+    n = int(dur * sr)
+    rng = np.random.default_rng(3)
+    x = np.diff(rng.normal(0, 1, n), prepend=0)
+    t = np.arange(n) / sr
+    grain = 0.55 + 0.45 * np.sign(np.sin(2 * np.pi * 38 * t))     # 테이프 결을 긁는 느낌
+    env = np.clip(t / 0.05, 0, 1) * np.clip((dur - t) / 0.08, 0, 1)
+    return x * grain * env * 0.16
+
+
+def whoosh(sr, dur):
+    """줌인할 때 점점 커지는 바람 소리."""
+    n = int(dur * sr)
+    rng = np.random.default_rng(4)
+    x = rng.normal(0, 1, n)
+    k = np.exp(-1 / (sr * 0.002))                                   # 저역 통과로 부드럽게
+    y = np.empty(n)
+    acc = 0.0
+    for i in range(n):
+        acc = acc * k + x[i] * (1 - k)
+        y[i] = acc
+    t = np.arange(n) / sr
+    env = (t / dur) ** 2 * np.clip((dur - t) / 0.06, 0, 1)
+    return y / (np.abs(y).max() + 1e-9) * env * 0.5
+
+
 def intro(sr, dur, timing):
-    """인트로 장면 효과음. timing: 각 사건이 일어나는 시각(초)."""
+    """인트로 장면 효과음."""
     buf = np.zeros(int(dur * sr), np.float32)
-    mix_at(buf, thud(sr), timing["land"], sr)
-    mix_at(buf, thud(sr, 0.25) * 0.4, timing["land"] + 0.22, sr)  # 작게 한 번 더 튐
-    mix_at(buf, rustle(sr), timing["open"], sr)
-    for k, t in enumerate(timing["letters"]):
-        mix_at(buf, pop(sr, 520 + k * 90), t, sr)
-    mix_at(buf, chime(sr), timing["done"], sr)
+    c0, c1 = timing["cut"]
+    mix_at(buf, cut(sr, c1 - c0), c0, sr)
+    mix_at(buf, rustle(sr, 0.4), timing["open"], sr)
+    mix_at(buf, pop(sr, 700), timing["title"], sr)
+    mix_at(buf, whoosh(sr, dur - timing["zoom"]), timing["zoom"], sr)
     return np.clip(buf, -1, 1)
