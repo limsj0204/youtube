@@ -6,7 +6,7 @@
 import math
 import warnings
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 
 from . import assets as A
 from . import geo
@@ -742,8 +742,140 @@ class Tableau(Scene):
                       col, a, dy=(1 - a) * 20, shadow=True)
 
 
+class Intro(Scene):
+    """채널 인트로: 상자가 떨어져 튕기고, 흔들리다 열리면서 채널 이름 글자가 하나씩 튀어나온다.
+
+    - type: intro
+      name: 단어언박싱           # 글자마다 하나씩 튀어나옴
+      accent_from: 2             # 이 글자부터 강조색 (단어 / 언박싱)
+      tagline: 단어 속에 숨은 이야기를 꺼내 봅니다
+      hold: 4.4
+    """
+    LAND, WIGGLE, OPEN, LETTER0, STEP = 0.55, 0.85, 1.2, 1.5, 0.16
+    KRAFT, KRAFT_DARK, KRAFT_LIGHT = (196, 140, 86), (160, 110, 64), (214, 162, 106)
+
+    @classmethod
+    def timing(cls, n):
+        letters = [cls.LETTER0 + k * cls.STEP for k in range(n)]
+        return {"land": cls.LAND, "open": cls.OPEN, "letters": letters, "done": letters[-1] + 0.4}
+
+    def prepare(self, L):
+        super().prepare(L)
+        self.chars = list(self.d.get("name", "단어언박싱"))
+        f = font("serif_bold", 180 * L.s)
+        widths = [S.text_size(ch, f)[0] for ch in self.chars]
+        gap = 8 * L.s
+        total = sum(widths) + gap * (len(widths) - 1)
+        x = L.cx - total / 2
+        self.targets = []
+        for w in widths:
+            self.targets.append(x + w / 2)
+            x += w + gap
+
+    def _box(self, open_k, s):
+        """상자 그림 (RGBA). 아래 가운데가 기준점."""
+        bw, bh, th = 520 * s, 350 * s, 32 * s
+        W, H = int(bw * 2.6), int(bh * 3.2)
+        im = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(im)
+        bx0, by1 = (W - bw) / 2, H - 10
+        by0 = by1 - bh
+        # 몸통 + 오른쪽 그늘 + 테이프 + 라벨
+        d.rectangle((bx0, by0, bx0 + bw, by1), fill=self.KRAFT)
+        d.rectangle((bx0 + bw * 0.82, by0, bx0 + bw, by1), fill=self.KRAFT_DARK)
+        d.rectangle((bx0 + bw * 0.44, by0, bx0 + bw * 0.56, by0 + bh * 0.42), fill=S.mix(self.KRAFT, (255, 255, 255), 0.35))
+        lx0, ly0 = bx0 + bw * 0.2, by0 + bh * 0.52
+        d.rounded_rectangle((lx0, ly0, lx0 + bw * 0.5, ly0 + bh * 0.3), int(8 * s), fill=(245, 242, 235))
+        f = font("sans_bold", 40 * s)
+        d.text((lx0 + bw * 0.25, ly0 + bh * 0.15), "FRAGILE", font=f, fill=S.ACCENT, anchor="mm")
+        # 날개: 왼쪽은 왼쪽 모서리, 오른쪽은 오른쪽 모서리를 축으로 열린다
+        ang = math.radians(150 * open_k)
+        for side in (-1, 1):
+            hx = bx0 if side < 0 else bx0 + bw
+            length = bw / 2
+            a = ang if side < 0 else -ang
+            dirx, diry = (-side) * math.cos(a), -abs(math.sin(a))
+            nx, ny = -diry, dirx
+            p1 = (hx, by0)
+            p2 = (hx + dirx * length, by0 + diry * length)
+            pts = [p1, p2, (p2[0] + nx * th * side * -1, p2[1] + ny * th * side * -1),
+                   (p1[0] + nx * th * side * -1, p1[1] + ny * th * side * -1)]
+            d.polygon(pts, fill=self.KRAFT_LIGHT if open_k > 0.02 else self.KRAFT, outline=self.KRAFT_DARK)
+        return im, (W / 2, H - 10), by0 - (H - 10)
+
+    def draw(self, img, c):
+        L, d, s, t = self.L, self.d, self.L.s, c.t
+        floor = L.cy + 330 * s
+        # 떨어지기 → 튕기기
+        if t < self.LAND:
+            k = (t / self.LAND) ** 2
+            dy = -(L.H * 0.9) * (1 - k)
+        elif t < self.LAND + 0.32:
+            dy = -46 * s * math.sin(math.pi * (t - self.LAND) / 0.32)
+        else:
+            dy = 0
+        # 흔들기
+        rot = 0.0
+        if self.WIGGLE <= t < self.OPEN:
+            k = (t - self.WIGGLE) / (self.OPEN - self.WIGGLE)
+            rot = 7 * math.sin(k * math.pi * 4) * (1 - k)
+        # 열기 (살짝 넘쳤다 돌아오는 움직임)
+        ok = 0.0
+        if t >= self.OPEN:
+            x = S.clamp((t - self.OPEN) / 0.35)
+            c1 = 1.70158
+            ok = 1 + (c1 + 1) * (x - 1) ** 3 + c1 * (x - 1) ** 2
+        box, anchor, top_off = self._box(ok, s)
+        if rot:
+            box = box.rotate(rot, resample=Image.BICUBIC, center=anchor)
+        mouth = (L.cx, floor + top_off)
+        # 상자 안에서 새어 나오는 빛과 빛줄기
+        if ok > 0:
+            S.glow(img, mouth, 260 * s, S.ACCENT, 0.7 * min(1, ok))
+            dr = ImageDraw.Draw(img)
+            ray_k = S.clamp((t - self.OPEN) / 0.9)
+            fade = 1 - S.clamp((t - self.OPEN - 0.6) / 0.8)
+            if fade > 0:
+                for i in range(11):
+                    ang = math.radians(-170 + i * 16)
+                    r0, r1 = 60 * s, (80 + 230 * ray_k) * s
+                    col = S.mix(S.BG_TOP, S.ACCENT, fade)
+                    dr.line([(mouth[0] + math.cos(ang) * r0, mouth[1] + math.sin(ang) * r0),
+                             (mouth[0] + math.cos(ang) * r1, mouth[1] + math.sin(ang) * r1)],
+                            fill=col, width=max(2, int(5 * s)))
+        # 바닥 그림자 (떨어지는 동안엔 작고 흐리게)
+        near = S.clamp(1 + dy / (L.H * 0.5))
+        sw = 300 * s * (0.5 + 0.5 * near)
+        sh_layer = Image.new("RGBA", (int(sw * 2 + 20), int(60 * s) + 20), (0, 0, 0, 0))
+        ImageDraw.Draw(sh_layer).ellipse((10, 10, 10 + sw * 2, 10 + 40 * s), fill=(0, 0, 0, int(150 * near)))
+        sh_layer = sh_layer.filter(ImageFilter.GaussianBlur(10 * s))
+        img.paste(sh_layer, (int(L.cx - sw - 10), int(floor - 20 * s - 10)), sh_layer)
+        img.paste(box, (int(L.cx - anchor[0]), int(floor - anchor[1] + dy)), box)
+        # 글자가 하나씩 튀어나와 제자리로
+        ty = floor + top_off - 230 * s
+        tim = self.timing(len(self.chars))
+        acc_from = d.get("accent_from", 2)
+        for k, (ch, tx) in enumerate(zip(self.chars, self.targets)):
+            t0 = tim["letters"][k]
+            if t < t0:
+                continue
+            x = S.clamp((t - t0) / 0.42)
+            c1 = 1.70158
+            e = 1 + (c1 + 1) * (x - 1) ** 3 + c1 * (x - 1) ** 2   # 살짝 넘쳤다 돌아옴
+            px = mouth[0] + (tx - mouth[0]) * S.clamp(e, 0, 1.2)
+            arc = -math.sin(math.pi * S.clamp(x)) * 70 * s
+            py = mouth[1] + (ty - mouth[1]) * S.clamp(e, 0, 1.2) + arc
+            size = 180 * s * (0.25 + 0.75 * S.clamp(e, 0, 1.15))
+            col = S.ACCENT if k >= acc_from else S.INK
+            draw_text(img, (px, py), ch, font("serif_bold", size), col, min(1, x * 3))
+        if d.get("tagline"):
+            a = appear(t, tim["done"], 0.5)
+            draw_text(img, (L.cx, floor + 70 * s), d["tagline"], font("sans", 42 * s), S.MUTED, a,
+                      dy=(1 - a) * 12)
+
+
 TYPES = {
     "hook": Hook, "title": Title, "chapter": Chapter, "chain": Chain, "map": Map,
     "timeline": Timeline, "theories": Theories, "summary": Summary, "sources": Sources,
-    "cta": Cta, "tableau": Tableau,
+    "cta": Cta, "tableau": Tableau, "intro": Intro,
 }
