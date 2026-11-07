@@ -172,8 +172,7 @@ def thumbnail(ep, path):
         for i, code in enumerate(th["flags"]):
             A.place(img, "flag:" + code, (fx + i * 150, y + 30), 100)
             if i + 1 < len(th["flags"]):
-                S.arrow(ImageDraw.Draw(img), (fx + i * 150 + 62, y + 30), (fx + i * 150 + 92, y + 30),
-                        S.ACCENT, 5, head=16)
+                S.draw_arrow(img, (fx + i * 150 + 60, y + 30), 30, S.ACCENT, 46)
     if th.get("badge"):
         f = S.font("sans_bold", 36)
         tw, _ = S.text_size(th["badge"], f)
