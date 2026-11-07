@@ -53,6 +53,22 @@ python3 -m ytmaker.build episodes/001_portuguese_words/script.yaml --preview
 
 `at`, `reveal`, `start`, `end` 값은 **몇 번째 문장(0부터)에서 등장할지**를 뜻합니다. 소수도 쓸 수 있습니다(1.5 = 1번 문장의 중간).
 
+### 스타일(테마)
+
+대본 맨 위에 `theme: dictionary`처럼 적거나, 만들 때 `--theme pop`을 붙입니다.
+
+| 테마 | 느낌 |
+|---|---|
+| `midnight` | 짙은 남색, 호박색 (처음 버전) |
+| `dictionary` | 누런 종이, 먹색 명조체, 붉은 도장 |
+| `magazine` | 흰 바탕, 굵은 고딕, 빨강 한 색 |
+| `pop` | 노란 바탕, 굵은 검정 테두리, 딱딱한 그림자 |
+| `chalk` | 칠판, 손글씨 |
+| `blueprint` | 파란 모눈종이, 고정폭 글씨 |
+
+테마 폰트에 없는 글자(일본어 가나, ã 같은 악센트 문자, 화살표)는 자동으로 Noto 폰트로 대신 그립니다.
+색과 폰트는 `ytmaker/themes.py`에서 고칩니다.
+
 ### 그림 넣기
 
 대본에서 그림은 이름으로 부릅니다.

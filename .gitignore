@@ -2,3 +2,5 @@ output/
 models/
 __pycache__/
 *.pyc
+assets/fonts/*.ttf
+assets/fonts/*.otf

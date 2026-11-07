@@ -263,7 +263,7 @@ class Chain(Scene):
             shift = (bw_ + 12 * L.s) / 2 if badge else 0
             if badge:
                 A.place(img, badge, (lx - tw / 2 + 18 * L.s + bw_ / 2, ly), bw_, a, shadow=False)
-            draw_text(img, (lx + shift, ly), lang, ft, S.BG_BOTTOM if cur else S.INK, a)
+            draw_text(img, (lx + shift, ly), lang, ft, S.ON_ACCENT if cur else S.opt("tag_ink", S.INK), a)
             # 단어 (카드 폭에 맞게 크기 자동 조절)
             size = 120 * L.s
             while size > 30 and S.text_size(step["word"], font("serif_bold", size))[0] > max_word_w:
@@ -360,7 +360,7 @@ class Map(Scene):
                                 ly - th / 2 - 14 * L.s,
                                 lx + tw / 2 + iw / 2 + 16 * L.s + (6 * L.s if iw else 0),
                                 ly + th / 2 + 14 * L.s),
-                          int(12 * L.s), S.BG_BOTTOM, col, width=2, alpha=0.85 * a)
+                          int(12 * L.s), S.CARD, col, width=2, alpha=0.9 * a)
             if iw:
                 A.place(img, pin["icon"], (lx - tw / 2 - 6 * L.s, ly), iw, a, shadow=False)
             draw_text(img, (lx + iw / 2 + (6 * L.s if iw else 0) / 2, ly), pin["name"], f, S.INK, a)
@@ -376,7 +376,7 @@ class Map(Scene):
             tw, th = S.text_size(d["title"], f)
             bx = pos[0] - (tw / 2 if anchor == "mm" else 0)
             S.rounded_box(img, (bx - 24, pos[1] - th / 2 - 18, bx + tw + 24, pos[1] + th / 2 + 18),
-                          14, S.BG_BOTTOM, S.ACCENT, width=2, alpha=0.85 * a)
+                          14, S.CARD, S.ACCENT, width=2, alpha=0.9 * a)
             draw_text(img, pos, d["title"], f, S.INK, a, anchor=anchor)
 
 
@@ -591,7 +591,7 @@ class Sources(Scene):
             yb = y0 + h - 90 * L.s
             S.rounded_box(img, (L.cx - 620 * L.s, yb - 70 * L.s, L.cx + 620 * L.s, yb + 70 * L.s),
                           int(70 * L.s), S.ACCENT, alpha=a)
-            draw_text(img, (L.cx, yb), d["next"], font("sans_bold", 46 * L.s), S.BG_BOTTOM, a)
+            draw_text(img, (L.cx, yb), d["next"], font("sans_bold", 46 * L.s), S.ON_ACCENT, a)
 
 
 class Cta(Scene):
@@ -611,7 +611,7 @@ class Cta(Scene):
         S.rounded_box(img, (L.cx - 330 * L.s, yb - 70 * L.s, L.cx + 330 * L.s, yb + 70 * L.s),
                       int(70 * L.s), S.ACCENT, alpha=b)
         draw_text(img, (L.cx, yb), d.get("button", "본편 보러 가기"), font("sans_bold", 52 * L.s),
-                  S.BG_BOTTOM, b)
+                  S.ON_ACCENT, b)
 
 
 class Tableau(Scene):

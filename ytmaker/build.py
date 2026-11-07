@@ -73,9 +73,9 @@ def subtitle(img, L, text, alpha):
     widest = max(S.text_size(line, f)[0] for line in lines)
     S.rounded_box(img, (L.W / 2 - widest / 2 - 34, top - lh / 2 - 12,
                         L.W / 2 + widest / 2 + 34, top + (n - 1) * lh + lh / 2 + 12),
-                  18, (0, 0, 0), alpha=0.55 * alpha)
+                  int(18 * S.opt("radius", 1.0)) or 1, S.SUB_BOX, alpha=S.opt("sub_alpha", 0.55) * alpha)
     for i, line in enumerate(lines):
-        S.draw_text(img, (L.W / 2, top + i * lh), line, f, S.INK, alpha)
+        S.draw_text(img, (L.W / 2, top + i * lh), line, f, S.SUB_INK, alpha)
 
 
 def header(img, L, ep):
@@ -189,10 +189,12 @@ def main(argv=None):
     ap.add_argument("--preview", type=float, nargs="*", help="이 시점들의 프레임만 PNG로 저장")
     ap.add_argument("--speed", type=float, default=None, help="말하기 속도 (기본: 대본의 speed, 없으면 0.95)")
     ap.add_argument("--out", default="output")
+    ap.add_argument("--theme", help="영상 스타일 (기본: 대본의 theme, 없으면 midnight)")
     args = ap.parse_args(argv)
 
     script = Path(args.script)
     ep = yaml.safe_load(script.read_text())
+    S.use(args.theme or ep.get("theme", "midnight"))
     L = Layout(short=args.short)
     scenes = ep["shorts"]["scenes"] if args.short else ep["scenes"]
     name = script.parent.name + ("_short" if args.short else "")

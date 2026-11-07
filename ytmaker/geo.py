@@ -86,10 +86,10 @@ def base_map(size, proj, highlight=(), ss=2):
     # 경위선
     for lon in range(-180, 181, 15):
         x, _ = proj(lon, 0)
-        d.line([(x * ss, 0), (x * ss, h * ss)], fill=(255, 255, 255, 12), width=ss)
+        d.line([(x * ss, 0), (x * ss, h * ss)], fill=S.GRID + (14,), width=ss)
     for lat in range(-75, 76, 15):
         _, y = proj(0, lat)
-        d.line([(0, y * ss), (w * ss, y * ss)], fill=(255, 255, 255, 12), width=ss)
+        d.line([(0, y * ss), (w * ss, y * ss)], fill=S.GRID + (14,), width=ss)
     for name, rings in countries().items():
         if name == "Antarctica":
             continue
