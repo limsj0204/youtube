@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 
 if command -v apt-get >/dev/null; then
   sudo_cmd=""; [ "$(id -u)" -ne 0 ] && sudo_cmd="sudo"
-  $sudo_cmd apt-get install -y -qq ffmpeg fonts-noto-cjk fonts-nanum >/dev/null
+  $sudo_cmd apt-get install -y -qq ffmpeg fonts-noto-cjk fonts-nanum libcairo2 >/dev/null
 fi
 
 pip install -q -r requirements.txt

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <!-- 카스텔라 조각: 짙은 갈색 윗면, 노란 속, 종이 받침 -->
+  <path d="M24 186 L128 230 L236 182 L236 196 L128 244 L24 200 Z" fill="#E8DCC6"/>
+  <path d="M40 112 L128 150 L128 222 L40 184 Z" fill="#F6C343"/>
+  <path d="M128 150 L220 108 L220 180 L128 222 Z" fill="#E9AE2C"/>
+  <path d="M40 112 L130 72 L220 108 L128 150 Z" fill="#8A4B1F"/>
+  <path d="M40 112 L128 150 L128 160 L40 122 Z" fill="#6E3914"/>
+  <path d="M128 150 L220 108 L220 118 L128 160 Z" fill="#5C2F10"/>
+  <g fill="#E0A428" opacity="0.8">
+    <circle cx="70" cy="150" r="3"/><circle cx="92" cy="172" r="2.5"/><circle cx="104" cy="150" r="2"/>
+    <circle cx="62" cy="172" r="2"/><circle cx="114" cy="190" r="3"/><circle cx="80" cy="190" r="2"/>
+  </g>
+  <g fill="#D69A22" opacity="0.8">
+    <circle cx="160" cy="160" r="3"/><circle cx="190" cy="150" r="2"/><circle cx="176" cy="182" r="2.5"/>
+    <circle cx="204" cy="170" r="2"/><circle cx="148" cy="194" r="2"/>
+  </g>
+</svg>

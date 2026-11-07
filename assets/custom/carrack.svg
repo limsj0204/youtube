@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <!-- 16세기 포르투갈 범선(나우): 붉은 십자가 돛 -->
+  <path d="M128 18 L128 186" stroke="#6B3E1E" stroke-width="7" stroke-linecap="round"/>
+  <path d="M74 52 L74 184" stroke="#6B3E1E" stroke-width="6" stroke-linecap="round"/>
+  <path d="M184 60 L184 184" stroke="#6B3E1E" stroke-width="6" stroke-linecap="round"/>
+  <path d="M128 18 L156 26 L128 34 Z" fill="#E53935"/>
+  <path d="M96 40 Q128 34 160 40 L156 92 Q128 98 100 92 Z" fill="#FFF3DC"/>
+  <path d="M90 104 Q128 96 166 104 L160 160 Q128 168 96 160 Z" fill="#FFF3DC"/>
+  <rect x="122" y="112" width="12" height="42" rx="2" fill="#E53935"/>
+  <rect x="107" y="127" width="42" height="12" rx="2" fill="#E53935"/>
+  <rect x="123" y="52" width="10" height="30" rx="2" fill="#E53935"/>
+  <rect x="113" y="62" width="30" height="10" rx="2" fill="#E53935"/>
+  <path d="M54 76 Q74 70 94 76 L90 128 Q74 134 58 128 Z" fill="#F4E4C4"/>
+  <path d="M166 84 L204 92 L184 150 Z" fill="#F4E4C4"/>
+  <path d="M28 170 L228 170 L210 206 Q128 222 46 206 Z" fill="#9C5B2E"/>
+  <path d="M28 170 L228 170 L224 180 L32 180 Z" fill="#7A4220"/>
+  <path d="M18 156 L64 156 L70 172 L28 172 Z" fill="#9C5B2E"/>
+  <path d="M190 150 L238 150 L230 172 L194 172 Z" fill="#9C5B2E"/>
+  <circle cx="92" cy="192" r="5" fill="#4A2812"/><circle cx="128" cy="194" r="5" fill="#4A2812"/>
+  <circle cx="164" cy="192" r="5" fill="#4A2812"/>
+  <path d="M8 214 Q40 202 72 214 T136 214 T200 214 T264 214 L264 256 L-8 256 Z" fill="#1E88E5"/>
+  <path d="M8 228 Q40 218 72 228 T136 228 T200 228 T264 228 L264 256 L-8 256 Z" fill="#42A5F5"/>
+</svg>

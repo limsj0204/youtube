@@ -21,7 +21,7 @@ from . import tts
 from .scenes import TYPES, Clock, Layout
 
 FPS = 30
-LEAD, GAP, TAIL = 0.45, 0.35, 0.7   # 장면 시작 여백, 문장 사이 간격, 장면 끝 여백(초)
+LEAD, GAP, TAIL = 0.6, 0.55, 1.1   # 장면 시작 여백, 문장 사이 간격, 장면 끝 여백(초)
 
 
 def sentences(scene):
@@ -166,6 +166,14 @@ def thumbnail(ep, path):
         col = S.ACCENT if i == 0 else S.INK
         S.draw_text(img, (640, y), line, f, col, anchor="lm", shadow=True)
         y += 130 if i == 0 else 90
+    if th.get("flags"):
+        from . import assets as A
+        fx = 640 + 60
+        for i, code in enumerate(th["flags"]):
+            A.place(img, "flag:" + code, (fx + i * 150, y + 30), 100)
+            if i + 1 < len(th["flags"]):
+                S.arrow(ImageDraw.Draw(img), (fx + i * 150 + 62, y + 30), (fx + i * 150 + 92, y + 30),
+                        S.ACCENT, 5, head=16)
     if th.get("badge"):
         f = S.font("sans_bold", 36)
         tw, _ = S.text_size(th["badge"], f)
@@ -179,7 +187,7 @@ def main(argv=None):
     ap.add_argument("script")
     ap.add_argument("--short", action="store_true", help="세로 쇼츠 버전")
     ap.add_argument("--preview", type=float, nargs="*", help="이 시점들의 프레임만 PNG로 저장")
-    ap.add_argument("--speed", type=float, default=1.0, help="말하기 속도")
+    ap.add_argument("--speed", type=float, default=None, help="말하기 속도 (기본: 대본의 speed, 없으면 0.95)")
     ap.add_argument("--out", default="output")
     args = ap.parse_args(argv)
 
@@ -192,7 +200,8 @@ def main(argv=None):
     out.mkdir(parents=True, exist_ok=True)
 
     t0 = time.time()
-    timeline, audio, total = plan(scenes, args.speed)
+    speed = args.speed or ep.get("speed", 0.95)
+    timeline, audio, total = plan(scenes, speed)
     print(f"음성 생성 완료: {len(scenes)}개 장면, 총 {total:.1f}초 ({time.time() - t0:.1f}s)")
     objs = []
     for item in timeline:

@@ -8,6 +8,7 @@ import warnings
 
 from PIL import Image, ImageDraw
 
+from . import assets as A
 from . import geo
 from . import style as S
 from .style import appear, draw_text, font
@@ -62,6 +63,11 @@ class Clock:
         return appear(self.t, self.at(x), dur)
 
 
+def bob(t, phase=0.0, amp=8.0):
+    """그림이 살짝 떠다니는 움직임."""
+    return math.sin(t * 1.6 + phase) * amp
+
+
 def _default_reveal(n, sents):
     """reveal 지정이 없으면 문장 수에 맞춰 고르게 나눈다."""
     m = max(1, len(sents))
@@ -79,7 +85,7 @@ class Scene:
         raise NotImplementedError
 
     def title(self, img, c, text):
-        """장면 위쪽 제목."""
+        """장면 위쪽 제목 (d["icon"] 이 있으면 제목 왼쪽에 그림)."""
         if not text:
             return
         L = self.L
@@ -87,6 +93,10 @@ class Scene:
         a = c.p(0, 0.6) if c.sents else appear(c.t, 0)
         f = font("sans_bold", 54 * L.s)
         draw_text(img, (L.cx, y + 40 * L.s), text, f, S.INK, a, dy=(1 - a) * 20)
+        if self.d.get("icon"):
+            tw = S.text_size(text, f)[0]
+            A.place(img, self.d["icon"], (L.cx - tw / 2 - 60 * L.s, y + 36 * L.s + bob(c.t, 0, 3)),
+                    80 * L.s, a)
         lw = S.text_size(text, f)[0] * a
         ImageDraw.Draw(img).line([(L.cx - lw / 2, y + 85 * L.s), (L.cx + lw / 2, y + 85 * L.s)],
                                  fill=S.ACCENT, width=max(2, int(4 * L.s)))
@@ -103,6 +113,10 @@ class Hook(Scene):
         cy = L.cy - 90 * L.s
         S.glow(img, (L.cx, cy), 330 * L.s, S.ACCENT, 0.35 * e)
         draw_text(img, (L.cx, cy), d["word"], font("serif_bold", size), S.INK, e, shadow=True)
+        if d.get("icon"):
+            k = c.p(d.get("icon_at", 0.4), 0.6)
+            A.place(img, d["icon"], (L.cx + 310 * L.s, cy - 70 * L.s + bob(c.t, 0, 10 * L.s)),
+                    240 * L.s * (0.7 + 0.3 * k), k, rotate=-10 * (1 - k))
         # 지워지는 후보들 (예: 한국어? 영어?)
         tags = d.get("strike", [])
         if tags:
@@ -148,6 +162,27 @@ class Title(Scene):
         if d.get("subtitle"):
             draw_text(img, (L.cx, y + 70 * L.s), d["subtitle"], font("sans", 46 * L.s),
                       S.MUTED, a3)
+        flags = d.get("flags", [])
+        if flags:
+            fw, gap = 96 * L.s, 90 * L.s
+            total = fw * len(flags) + gap * (len(flags) - 1)
+            fy = y + 190 * L.s
+            dr = ImageDraw.Draw(img)
+            for i, code in enumerate(flags):
+                k = appear(c.t, 1.3 + i * 0.35, 0.5)
+                fx = L.cx - total / 2 + fw / 2 + i * (fw + gap)
+                A.place(img, "flag:" + code, (fx, fy + (1 - k) * 20), fw, k)
+                if i + 1 < len(flags) and appear(c.t, 1.5 + i * 0.35, 0.4) > 0:
+                    S.arrow(dr, (fx + fw / 2 + 18 * L.s, fy), (fx + fw / 2 + gap - 18 * L.s, fy),
+                            S.ACCENT, max(3, int(5 * L.s)), head=int(18 * L.s))
+        if d.get("ship"):
+            p = c.t / max(1.0, c.dur)
+            A.place(img, d["ship"], (lerp_(-150, L.W + 150, p), L.H - (420 if L.short else 150) * L.s
+                                     + bob(c.t, 0, 5 * L.s)), 200 * L.s, 0.9)
+
+
+def lerp_(a, b, x):
+    return a + (b - a) * x
 
 
 class Chapter(Scene):
@@ -156,6 +191,10 @@ class Chapter(Scene):
         a = appear(c.t, 0.05, 0.6)
         b = appear(c.t, 0.3, 0.7)
         num = f"{d.get('num', 1):02d}"
+        if d.get("icon"):
+            k = appear(c.t, 0.2, 0.7)
+            A.place(img, d["icon"], (L.cx, L.cy - 290 * L.s + bob(c.t, 0, 8 * L.s) + (1 - k) * 30),
+                    190 * L.s, k)
         draw_text(img, (L.cx, L.cy - 120 * L.s), num, font("serif_bold", 150 * L.s), S.ACCENT, a,
                   dy=(1 - a) * -30)
         draw_text(img, (L.cx, L.cy + 60 * L.s), d["title"], font("serif_bold", 120 * L.s), S.INK,
@@ -206,7 +245,9 @@ class Chain(Scene):
             # 언어 표시
             ft = font("sans_bold", 32 * L.s)
             lang = step.get("lang", "")
-            tw = S.text_size(lang, ft)[0] + 36 * L.s
+            badge = ("flag:" + step["flag"]) if step.get("flag") else step.get("badge")
+            bw_ = 46 * L.s if badge else 0
+            tw = S.text_size(lang, ft)[0] + 36 * L.s + (bw_ + 12 * L.s if badge else 0)
             if L.short:
                 lx, ly = bx + 40 * L.s + tw / 2, by + bh / 2
                 wx = bx + 40 * L.s + tw + (bw - 40 * L.s - tw) / 2
@@ -219,7 +260,10 @@ class Chain(Scene):
             tag_col = S.ACCENT if cur else S.CARD_EDGE
             S.rounded_box(img, (lx - tw / 2, ly - 26 * L.s, lx + tw / 2, ly + 26 * L.s),
                           int(26 * L.s), tag_col, alpha=a)
-            draw_text(img, (lx, ly), lang, ft, S.BG_BOTTOM if cur else S.INK, a)
+            shift = (bw_ + 12 * L.s) / 2 if badge else 0
+            if badge:
+                A.place(img, badge, (lx - tw / 2 + 18 * L.s + bw_ / 2, ly), bw_, a, shadow=False)
+            draw_text(img, (lx + shift, ly), lang, ft, S.BG_BOTTOM if cur else S.INK, a)
             # 단어 (카드 폭에 맞게 크기 자동 조절)
             size = 120 * L.s
             while size > 30 and S.text_size(step["word"], font("serif_bold", size))[0] > max_word_w:
@@ -289,12 +333,15 @@ class Map(Scene):
                 _dashed(dr, path, col, width, 26 * L.s, 16 * L.s)
             else:
                 dr.line(path, fill=col, width=width, joint="curve")
-            if p < 1:
-                heads.append((path[-1], col))
-        for pos, col in heads:
+            if r.get("head") or p < 1:
+                heads.append((path[-1], col, r.get("head")))
+        for pos, col, head in heads:
             S.glow(img, pos, 60 * L.s, col, 0.9)
-            r = 10 * L.s
-            dr.ellipse((pos[0] - r, pos[1] - r, pos[0] + r, pos[1] + r), fill=S.INK)
+            if head:
+                A.place(img, head, (pos[0], pos[1] - 34 * L.s + bob(c.t, 0, 3 * L.s)), 96 * L.s)
+            else:
+                r = 10 * L.s
+                dr.ellipse((pos[0] - r, pos[1] - r, pos[0] + r, pos[1] + r), fill=S.INK)
         # 지명 핀
         for pin in d.get("pins", []):
             a = c.p(pin.get("at", 0), 0.4)
@@ -307,11 +354,16 @@ class Map(Scene):
             dx, dy = pin.get("dx", 0) * L.s, pin.get("dy", -50) * L.s
             f = font("sans_bold", pin.get("size", 40) * L.s)
             tw, th = S.text_size(pin["name"], f)
+            iw = 44 * L.s if pin.get("icon") else 0
             lx, ly = x + dx, y + dy
-            S.rounded_box(img, (lx - tw / 2 - 16 * L.s, ly - th / 2 - 14 * L.s,
-                                lx + tw / 2 + 16 * L.s, ly + th / 2 + 14 * L.s),
+            S.rounded_box(img, (lx - tw / 2 - iw / 2 - 16 * L.s - (6 * L.s if iw else 0),
+                                ly - th / 2 - 14 * L.s,
+                                lx + tw / 2 + iw / 2 + 16 * L.s + (6 * L.s if iw else 0),
+                                ly + th / 2 + 14 * L.s),
                           int(12 * L.s), S.BG_BOTTOM, col, width=2, alpha=0.85 * a)
-            draw_text(img, (lx, ly), pin["name"], f, S.INK, a)
+            if iw:
+                A.place(img, pin["icon"], (lx - tw / 2 - 6 * L.s, ly), iw, a, shadow=False)
+            draw_text(img, (lx + iw / 2 + (6 * L.s if iw else 0) / 2, ly), pin["name"], f, S.INK, a)
             if pin.get("caption"):
                 draw_text(img, (lx, ly + th / 2 + 36 * L.s), pin["caption"],
                           font("sans", 30 * L.s), S.INK, a)
@@ -416,6 +468,10 @@ class Timeline(Scene):
             dr.ellipse((x - r, y - r, x + r, y + r), fill=col)
             fy = font("serif_bold", 64 * L.s)
             fl = font("sans", 34 * L.s)
+            if e.get("icon"):
+                ip = (x0 + w - 90 * L.s, y) if L.short else (x, y - 190)
+                A.place(img, e["icon"], (ip[0], ip[1] + bob(c.t, i, 5 * L.s) + (1 - a) * 20),
+                        (110 if cur else 90) * L.s, a)
             if L.short:
                 draw_text(img, (x + 50 * L.s, y - 30 * L.s), e["year"], fy, col, a, anchor="lm")
                 for k, line in enumerate(S.wrap(e["label"], fl, w - 260 * L.s)):
@@ -502,7 +558,11 @@ class Summary(Scene):
             bx1 = x0 + w - (0 if L.short else 160)
             S.rounded_box(img, (bx0 + off, y - rh / 2 + 10 * L.s, bx1 + off, y + rh / 2 - 10 * L.s),
                           int(18 * L.s), S.CARD, S.CARD_EDGE, width=2, alpha=a)
-            draw_text(img, (bx0 + 50 * L.s + off, y), row["word"], font("serif_bold", 64 * L.s),
+            wx = bx0 + 50 * L.s + off
+            if row.get("icon"):
+                A.place(img, row["icon"], (wx + 40 * L.s, y), 90 * L.s, a)
+                wx += 110 * L.s
+            draw_text(img, (wx, y), row["word"], font("serif_bold", 64 * L.s),
                       S.ACCENT, a, anchor="lm")
             f = font("sans", 38 * L.s)
             path = row["path"]
@@ -551,8 +611,71 @@ class Cta(Scene):
                   S.BG_BOTTOM, b)
 
 
+class Tableau(Scene):
+    """그림 여러 장을 배치해 상황을 보여주는 장면 (아이콘 조합, 나중엔 AI 일러스트 한 장도 가능).
+
+    layers:
+      - img: custom:carrack      # 그림 이름 (assets.py 참고)
+        x: 0.5                   # 무대 안 상대 위치 (0~1)
+        y: 0.55
+        size: 300                # 긴 변 픽셀 (가로 영상 기준)
+        at: 0                    # 등장 문장 번호
+        motion: slide            # pop(기본) | slide | float | zoom
+        from: [-0.2, 0.55]       # slide 시작 위치
+        until: 1                 # slide 가 끝나는 문장 번호 (기본: at 문장 끝)
+        flip: false
+        short: {x: 0.5, y: 0.3}  # 세로(쇼츠) 화면에서만 덮어쓸 값
+    texts:
+      - {text: 남만인, x: 0.5, y: 0.9, size: 56, at: 0, color: accent, font: serif_bold}
+    """
+
+    def draw(self, img, c):
+        L, d = self.L, self.d
+        self.title(img, c, d.get("title"))
+        x0, y0, w, h = L.stage
+        top = y0 + (120 * L.s if d.get("title") else 0)
+        hh = y0 + h - top
+
+        def pos(x, y):
+            return x0 + w * x, top + hh * y
+
+        for i, ly in enumerate(d.get("layers", [])):
+            ly = {**ly, **(ly.get("short", {}) if L.short else {})}
+            at = ly.get("at", 0)
+            a = c.p(at, 0.6)
+            if a <= 0:
+                continue
+            motion = ly.get("motion", "pop")
+            x, y = pos(ly.get("x", 0.5), ly.get("y", 0.5))
+            size = ly.get("size", 200) * L.s
+            rot = 0.0
+            if motion == "slide":
+                fx, fy = pos(*ly.get("from", [-0.2, ly.get("y", 0.5)]))
+                t0, t1 = c.at(at), c.end_of(ly.get("until", int(at)))
+                k = S.ease_in_out((c.t - t0) / max(0.1, t1 - t0))
+                x, y = fx + (x - fx) * k, fy + (y - fy) * k
+                y += bob(c.t, i, 4 * L.s)
+                a = min(1.0, a * 2)
+            elif motion == "zoom":
+                size *= 1.0 + 0.06 * S.clamp((c.t - c.at(at)) / max(1.0, c.dur))
+            else:
+                if motion == "float":
+                    y += bob(c.t, i * 1.3, 9 * L.s)
+                size *= 0.75 + 0.25 * a
+                rot = ly.get("tilt", 0) * (1 - a)
+            A.place(img, ly["img"], (x, y), size, a * ly.get("alpha", 1.0), flip=ly.get("flip", False),
+                    rotate=rot)
+        for tx in d.get("texts", []):
+            tx = {**tx, **(tx.get("short", {}) if L.short else {})}
+            a = c.p(tx.get("at", 0), 0.5)
+            col = getattr(S, tx.get("color", "ink").upper())
+            x, y = pos(tx.get("x", 0.5), tx.get("y", 0.9))
+            draw_text(img, (x, y), tx["text"], font(tx.get("font", "sans_bold"), tx.get("size", 48) * L.s),
+                      col, a, dy=(1 - a) * 20, shadow=True)
+
+
 TYPES = {
     "hook": Hook, "title": Title, "chapter": Chapter, "chain": Chain, "map": Map,
     "timeline": Timeline, "theories": Theories, "summary": Summary, "sources": Sources,
-    "cta": Cta,
+    "cta": Cta, "tableau": Tableau,
 }

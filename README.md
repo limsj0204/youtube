@@ -48,9 +48,26 @@ python3 -m ytmaker.build episodes/001_portuguese_words/script.yaml --preview
 | `map` | 실제 세계지도 위에 항로와 전파 경로 애니메이션 |
 | `timeline` | 연표 |
 | `theories` | 정설이 없을 때 여러 설을 나란히 보여주고 '정설 없음' 도장 |
-| `summary`, `sources`, `cta` | 정리, 참고 자료와 다음 편 예고, 쇼츠에서 본편으로 유도 |
+| `summary`, `sources`, `cta` | 정리, 참고 자료, 쇼츠에서 본편으로 유도 |
+| `tableau` | 그림 여러 장을 배치해 상황을 보여주는 장면 (밀려 들어오기, 떠다니기, 확대 등 움직임) |
 
 `at`, `reveal`, `start`, `end` 값은 **몇 번째 문장(0부터)에서 등장할지**를 뜻합니다. 소수도 쓸 수 있습니다(1.5 = 1번 문장의 중간).
+
+### 그림 넣기
+
+대본에서 그림은 이름으로 부릅니다.
+
+| 이름 | 위치 | 출처 |
+|---|---|---|
+| `icon:bread` | `assets/icons/bread.svg` | [Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (MIT) |
+| `flag:pt` | `assets/flags/pt.svg` | [flag-icons](https://github.com/lipis/flag-icons) (MIT) |
+| `custom:carrack` | `assets/custom/carrack.svg` | 이 저장소에서 직접 그림 (16세기 범선, 카스텔라) |
+| `episodes/.../img/a.png` | 그 경로 그대로 | AI 생성 이미지 등 직접 넣는 그림 |
+
+- 어원 카드: `flag:` 또는 `badge:` 로 언어 옆에 국기나 아이콘 표시
+- 지도: 항로의 `head:` 로 배나 빵이 항로를 따라 이동, 핀의 `icon:` 으로 이름표에 아이콘
+- 제목, 챕터, 연표, 정리 장면: `icon:` 으로 그림 추가
+- **국기는 시대에 맞을 때만** 씁니다. 16세기 항로의 경유지(고아, 믈라카, 마카오)는 당시 포르투갈 거점이었으므로 지금의 국기 대신 아이콘을 씁니다.
 
 ## 업그레이드 포인트
 
