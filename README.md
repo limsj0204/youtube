@@ -1,0 +1,64 @@
+# 단어의 여행: 영상 자동 제작 파이프라인
+
+대본(YAML) 하나로 **롱폼 영상, 홍보용 쇼츠, 썸네일, 설명란(챕터와 출처 포함)**을 한 번에 만듭니다.
+
+```
+대본 YAML ─┬─ 음성 합성(TTS) ── 문장별 타이밍 계산
+           ├─ 장면 렌더링 (단어 카드, 지도 항로, 연표, 여러 설 비교 …) + 자막
+           └─ ffmpeg 합성 → mp4  /  썸네일 png  /  description.txt
+```
+
+## 설치
+
+```bash
+./setup.sh
+```
+
+ffmpeg, 한글 폰트(Noto CJK, 나눔), 파이썬 패키지, 무료 한국어 음성 모델(KSS VITS)을 설치합니다.
+
+## 사용법
+
+```bash
+# 롱폼 (1920x1080)
+python3 -m ytmaker.build episodes/001_portuguese_words/script.yaml
+
+# 쇼츠 (1080x1920)
+python3 -m ytmaker.build episodes/001_portuguese_words/script.yaml --short
+
+# 렌더링 전에 장면별 화면만 PNG로 빠르게 확인
+python3 -m ytmaker.build episodes/001_portuguese_words/script.yaml --preview
+```
+
+결과물은 `output/<에피소드>/` 에 생깁니다.
+
+## 새 에피소드 만들기
+
+1. `episodes/001_portuguese_words/script.yaml` 을 복사합니다.
+2. `say:` 문장을 고칩니다. 숫자와 로마자는 음성용으로 한글로 풀어 쓰고, 화면 자막은 `sub:` 로 따로 적습니다.
+3. `--preview` 로 화면을 확인한 다음 렌더링합니다.
+4. **업로드 전에 `fact_check` 목록과 출처를 직접 확인합니다.** 어원은 근거 없는 민간어원이 많은 분야라서 이 단계가 채널의 신뢰도를 좌우합니다.
+
+### 장면 종류
+
+| type | 용도 |
+|---|---|
+| `hook` | 큰 글자 하나와 지워지는 후보들로 시작하는 도입부 |
+| `title`, `chapter` | 제목 카드, 챕터 카드 (`chapter:` 값이 설명란 챕터가 됨) |
+| `chain` | 어원 사슬: pão → パン → 빵 |
+| `map` | 실제 세계지도 위에 항로와 전파 경로 애니메이션 |
+| `timeline` | 연표 |
+| `theories` | 정설이 없을 때 여러 설을 나란히 보여주고 '정설 없음' 도장 |
+| `summary`, `sources`, `cta` | 정리, 참고 자료와 다음 편 예고, 쇼츠에서 본편으로 유도 |
+
+`at`, `reveal`, `start`, `end` 값은 **몇 번째 문장(0부터)에서 등장할지**를 뜻합니다. 소수도 쓸 수 있습니다(1.5 = 1번 문장의 중간).
+
+## 업그레이드 포인트
+
+- **음성 (중요)**: 기본 음성은 KSS 데이터셋으로 학습한 모델이고, KSS는 **비상업 라이선스(CC BY-NC-SA 4.0)**입니다. 시험 제작용으로만 쓰고, 수익화 채널에는 상업적 이용이 허용된 TTS로 바꿔야 합니다. 품질도 기본 수준입니다. `ytmaker/tts.py` 의 `synthesize()` 만 바꾸면 일레븐랩스, 타입캐스트, 클로바 보이스 같은 상용 TTS로 교체할 수 있습니다.
+- **대본 초안 자동화**: 단어 목록과 사전 자료를 LLM에 넣어 이 YAML 형식으로 초안을 받는 단계를 추가할 수 있습니다. 사람은 사실 확인만 하면 됩니다.
+- **배경음악**: 아직 없습니다. 저작권이 해결된 음원을 `-i bgm.mp3` 로 낮은 볼륨으로 섞으면 됩니다.
+
+## 사용한 자료
+
+- 지도: Natural Earth (퍼블릭 도메인), [world-atlas](https://github.com/topojson/world-atlas) (ISC)
+- 음성 모델: [Mimic 3 KSS](https://github.com/MycroftAI/mimic3-voices), sherpa-onnx 변환본

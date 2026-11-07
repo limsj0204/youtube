@@ -1,0 +1,5 @@
+pillow>=10
+numpy>=1.26
+pyyaml>=6
+# 1.13+ 버전은 espeak 기반 음소 변환이 빠져 한국어 VITS 모델이 동작하지 않음
+sherpa-onnx>=1.12,<1.13
