@@ -510,8 +510,11 @@ class Theories(Scene):
                           width=3, alpha=a)
             draw_text(img, (bx + 40 * L.s, by + 60 * L.s), card["label"], font("sans_bold", 32 * L.s),
                       S.ACCENT, a, anchor="lm")
+            hs = 64 * L.s
+            while hs > 24 and S.text_size(card["head"], font("serif_bold", hs))[0] > bw - 80 * L.s:
+                hs -= 2
             draw_text(img, (bx + 40 * L.s, by + 130 * L.s), card["head"],
-                      font("serif_bold", 64 * L.s), S.INK, a, anchor="lm")
+                      font("serif_bold", hs), S.INK, a, anchor="lm")
             fb = font("sans", 36 * L.s)
             for k, line in enumerate(S.wrap(card.get("body", ""), fb, bw - 80 * L.s)):
                 draw_text(img, (bx + 40 * L.s, by + 210 * L.s + k * 52 * L.s), line, fb, S.MUTED, a,
