@@ -202,11 +202,16 @@ def main(argv=None):
     ap.add_argument("--speed", type=float, default=None, help="말하기 속도 (기본: 대본의 speed, 없으면 0.95)")
     ap.add_argument("--out", default="output")
     ap.add_argument("--theme", help="영상 스타일 (기본: 대본의 theme, 없으면 midnight)")
+    ap.add_argument("--voice", help="TTS 엔진만 바꿔서 만들기: kss | google | elevenlabs")
     args = ap.parse_args(argv)
 
     script = Path(args.script)
     ep = yaml.safe_load(script.read_text())
     S.use(args.theme or ep.get("theme", "midnight"))
+    voice = dict(ep.get("voice") or {})
+    if args.voice and args.voice != voice.get("engine"):
+        voice = {"engine": args.voice}
+    tts.configure(voice)
     L = Layout(short=args.short)
     scenes = ep["shorts"]["scenes"] if args.short else ep["scenes"]
     name = script.parent.name + ("_short" if args.short else "")
