@@ -77,7 +77,7 @@ python3 -m ytmaker.build episodes/001_portuguese_words/script.yaml --preview
 | 이름 | 위치 | 출처 |
 |---|---|---|
 | `icon:bread` | `assets/icons/bread.svg` | [Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (MIT) |
-| `flag:pt` | `assets/flags/pt.svg` | [flag-icons](https://github.com/lipis/flag-icons) (MIT) |
+| `flag:pt` | `assets/flags/pt.svg` | Wikimedia Commons 국기 (퍼블릭 도메인, 공식 비율 3:2) |
 | `custom:carrack` | `assets/custom/carrack.svg` | 이 저장소에서 직접 그림 (16세기 범선, 카스텔라) |
 | `episodes/.../img/a.png` | 그 경로 그대로 | AI 생성 이미지 등 직접 넣는 그림 |
 

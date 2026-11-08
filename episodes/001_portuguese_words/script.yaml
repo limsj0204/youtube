@@ -32,7 +32,7 @@ sources:
 
 credits:
   - 일러스트 Fluent Emoji (Microsoft, MIT 라이선스)
-  - 국기 flag-icons (MIT 라이선스)
+  - 국기 Wikimedia Commons (퍼블릭 도메인)
   - 지도 Natural Earth (퍼블릭 도메인)
   - 글꼴 Pretendard (SIL OFL)
   - 내레이션 ElevenLabs
@@ -408,7 +408,7 @@ scenes:
     sources:
       - 국립국어원 표준국어대사전 '빵' '카스텔라' '담배' · 우리말샘 '담바고 타령'
       - 일본어 위키백과 カステラ · タバコ · パン · 南蛮貿易 · 鉄砲伝来 및 인용 문헌
-      - 'Fluent Emoji (Microsoft, MIT) · flag-icons (MIT) · Natural Earth'
+      - 'Fluent Emoji (Microsoft, MIT) · 국기 Wikimedia Commons · Natural Earth'
     say:
       - 오늘 이야기는 여기까지입니다. 시청해 주셔서 감사합니다.
 
