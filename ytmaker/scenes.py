@@ -743,9 +743,10 @@ class Tableau(Scene):
 
 
 class Intro(Scene):
-    """채널 인트로 (위에서 내려다본 상자).
-    닫힌 상자 → 커터칼이 가로 테이프를 길게 자름 → 날개가 위아래로 젖혀짐
-    → 상자 안에 채널 이름 → 살짝 뒤로 물러났다가 확 빨려 들어가는 줌으로 다음 장면.
+    """채널 인트로 (위에서 내려다본 택배 상자).
+    닫힌 상자 → 커터칼이 가로 테이프를 길게 자름 → 바깥 날개(긴 쪽)가 위아래로 열림
+    → 안쪽 날개(짧은 쪽)가 양옆으로 열림 → 상자 안에 채널 이름
+    → 살짝 뒤로 물러났다가 확 빨려 들어가는 줌으로 다음 장면.
 
     - type: intro
       name: 단어언박싱
@@ -753,16 +754,18 @@ class Intro(Scene):
       hold: 2.8
     """
     CUT0, CUT1 = 0.22, 0.85          # 칼질
-    OPEN0, OPEN1 = 0.9, 1.25         # 날개 열림
-    TITLE = 1.1                      # 제목 등장
-    PULL0, RUSH0 = 1.7, 1.9          # 뒤로 살짝 물러남 → 돌진
+    OPEN0, OPEN1 = 0.9, 1.2          # 바깥 날개(위아래) 열림
+    INNER0, INNER1 = 1.15, 1.45      # 안쪽 날개(양옆) 열림
+    TITLE = 1.35                     # 제목 등장
+    PULL0, RUSH0 = 1.9, 2.1          # 뒤로 살짝 물러남 → 돌진
     ZMAX = 40.0
     KRAFT, KRAFT_DARK, KRAFT_IN = (198, 146, 92), (150, 104, 60), (222, 184, 132)
     TAPE = (226, 204, 160)
 
     @classmethod
     def timing(cls, n=0):
-        return {"cut": (cls.CUT0, cls.CUT1), "open": cls.OPEN0, "title": cls.TITLE, "zoom": cls.RUSH0}
+        return {"cut": (cls.CUT0, cls.CUT1), "open": cls.OPEN0, "open2": cls.INNER0, "title": cls.TITLE,
+                "zoom": cls.RUSH0}
 
     def prepare(self, L):
         super().prepare(L)
@@ -849,7 +852,23 @@ class Intro(Scene):
                 draw_text(canvas, (left + w1 / 2, cy), self.parts[0], f, S.INK, ta)
                 draw_text(canvas, (left + w1 + w2 / 2, cy), self.parts[1], f, S.ACCENT, ta)
 
-        # 날개: 위 날개는 윗변, 아래 날개는 아랫변을 축으로 바깥으로 젖혀짐
+        # 안쪽 날개(짧은 쪽): 왼쪽/오른쪽 변을 축으로 양옆으로 젖혀짐. 길이는 상자 짧은 변의 절반
+        ik = S.ease_in_out((t - self.INNER0) / (self.INNER1 - self.INNER0))
+        icos = math.cos(math.pi * ik)
+        ilen = bh / 2
+        for side in (-1, 1):                       # -1 = 왼쪽, 1 = 오른쪽
+            hinge = x0 if side < 0 else x1
+            far = hinge - side * ilen * icos
+            xa, xb = sorted((hinge, far))
+            if xb - xa < 1:
+                continue
+            outer = icos >= 0
+            shade = 0.5 + 0.4 * abs(icos)
+            col = tuple(int(v * shade) for v in (self.KRAFT if outer else self.KRAFT_IN))
+            dr.rectangle((xa, y0, xb, y1), fill=col)
+            dr.line([(hinge, y0), (hinge, y1)], fill=self.KRAFT_DARK, width=lw(4))
+
+        # 바깥 날개(긴 쪽): 위 날개는 윗변, 아래 날개는 아랫변을 축으로 위아래로 젖혀짐
         ok = S.ease_in_out((t - self.OPEN0) / (self.OPEN1 - self.OPEN0))
         cosv = math.cos(math.pi * ok)
         half = bh / 2
@@ -871,13 +890,13 @@ class Intro(Scene):
             dr.line([(x0, hinge), (x1, hinge)], fill=self.KRAFT_DARK, width=lw(4))
 
         # 칼집 + 커터칼 (왼쪽에서 오른쪽으로 길게)
-        kk = S.clamp((t - (self.CUT0 - 0.12)) / (self.CUT1 + 0.2 - (self.CUT0 - 0.12)))
+        kk = S.clamp((t - (self.CUT0 - 0.12)) / (self.CUT1 + 0.08 - (self.CUT0 - 0.12)))
         kk = S.ease_in_out(kk)
-        knife_x = x0 - 200 * s + (bw + 400 * s) * kk
+        knife_x = x0 - 200 * s + (bw + 520 * s) * kk
         if ok < 0.02 and knife_x > x0 - 18 * s * z:
             xc = min(knife_x, x1 + 18 * s * z)
             dr.line([(x0 - 18 * s * z, cy), (xc, cy)], fill=(70, 46, 24), width=lw(5))
-        if self.CUT0 - 0.12 <= t <= self.CUT1 + 0.2:
+        if self.CUT0 - 0.12 <= t <= self.CUT1 + 0.08:
             self._knife(canvas, (knife_x, cy), s * 2.0)
 
         if rot:

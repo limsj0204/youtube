@@ -86,7 +86,9 @@ def intro(sr, dur, timing):
     buf = np.zeros(int(dur * sr), np.float32)
     c0, c1 = timing["cut"]
     mix_at(buf, cut(sr, c1 - c0), c0, sr)
-    mix_at(buf, rustle(sr, 0.4), timing["open"], sr)
+    mix_at(buf, rustle(sr, 0.35), timing["open"], sr)
+    if "open2" in timing:
+        mix_at(buf, rustle(sr, 0.3) * 0.8, timing["open2"], sr)
     mix_at(buf, pop(sr, 700), timing["title"], sr)
     mix_at(buf, whoosh(sr, dur - timing["zoom"]), timing["zoom"], sr)
     return np.clip(buf, -1, 1)
