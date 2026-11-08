@@ -69,9 +69,10 @@ def clean(text):
     return re.sub(r"\s+", " ", text).strip()
 
 
-def _key(text, speed):
+def _key(text, speed, ctx=("", "")):
     sig = json.dumps(VOICE, sort_keys=True, ensure_ascii=False)
-    return hashlib.sha1(f"{sig}|{speed}|{SAMPLE_RATE}|{text}".encode()).hexdigest()[:16]
+    extra = f"|{ctx[0]}|{ctx[1]}" if any(ctx) else ""
+    return hashlib.sha1(f"{sig}|{speed}|{SAMPLE_RATE}|{text}{extra}".encode()).hexdigest()[:16]
 
 
 def _store_load(key):
@@ -98,9 +99,11 @@ def _store_save(key, x):
                    input=pcm, check=True)
 
 
-def synthesize(text, speed=1.0):
+def synthesize(text, speed=1.0, prev="", nxt=""):
+    """prev/nxt: 앞뒤 문장. ElevenLabs 에 함께 보내면 문장 사이 억양이 이어진다."""
     text = clean(text)
-    key = _key(text, speed)
+    ctx = (clean(prev), clean(nxt)) if VOICE["engine"] == "elevenlabs" and VOICE.get("context", True) else ("", "")
+    key = _key(text, speed, ctx)
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     path = CACHE_DIR / f"{key}.npy"
     if path.exists():
@@ -115,7 +118,7 @@ def synthesize(text, speed=1.0):
     if engine == "google":
         x, sr = _google(text, speed)
     elif engine == "elevenlabs":
-        x, sr = _elevenlabs(text, speed)
+        x, sr = _elevenlabs(text, speed, ctx)
     else:
         x, sr = _kss_tts(text, speed)
     x = _resample(np.asarray(x, dtype=np.float32), sr, SAMPLE_RATE)
@@ -184,10 +187,12 @@ def _google(text, speed):
     return pcm.astype(np.float32) / 32768, sr
 
 
-def _elevenlabs(text, speed):
+def _elevenlabs(text, speed, ctx=("", "")):
     key = os.environ.get("ELEVENLABS_API_KEY", "set-by-proxy")
     body = {
         "text": text,
+        **({"previous_text": ctx[0]} if ctx[0] else {}),
+        **({"next_text": ctx[1]} if ctx[1] else {}),
         "model_id": VOICE.get("model", "eleven_multilingual_v2"),
         "voice_settings": {"stability": float(VOICE.get("stability", 0.5)),
                            "similarity_boost": float(VOICE.get("similarity", 0.75)),

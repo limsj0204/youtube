@@ -83,11 +83,11 @@ def base_map(size, proj, highlight=(), ss=2):
     w, h = size
     big = Image.new("RGBA", (w * ss, h * ss), (0, 0, 0, 0))
     d = ImageDraw.Draw(big)
-    # 경위선
-    for lon in range(-180, 181, 15):
+    # 경위선 (테마가 원할 때만. 어두운 배경에서 지저분해 보여 기본은 끔)
+    for lon in (range(-180, 181, 15) if S.opt("map_grid", False) else []):
         x, _ = proj(lon, 0)
         d.line([(x * ss, 0), (x * ss, h * ss)], fill=S.GRID + (14,), width=ss)
-    for lat in range(-75, 76, 15):
+    for lat in (range(-75, 76, 15) if S.opt("map_grid", False) else []):
         _, y = proj(0, lat)
         d.line([(0, y * ss), (w * ss, y * ss)], fill=S.GRID + (14,), width=ss)
     for name, rings in countries().items():

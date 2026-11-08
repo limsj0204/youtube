@@ -45,12 +45,17 @@ def plan(scenes, speed):
     """음성을 만들고 장면별 길이와 문장 타이밍을 계산한다."""
     timeline, audio, t = [], [], 0.0
     sr = tts.SAMPLE_RATE
+    flat = [s["say"] for sc in scenes for s in sentences(sc)]    # 앞뒤 문장 맥락용
+    k = 0
     for sc in scenes:
         sents = sentences(sc)
         local, chunks, cur = [], [], LEAD
         chunks.append(np.zeros(int(LEAD * sr), np.float32))
         for i, s in enumerate(sents):
-            wav, _ = tts.synthesize(s["say"], speed)
+            prev = flat[k - 1] if k > 0 else ""
+            nxt = flat[k + 1] if k + 1 < len(flat) else ""
+            wav, _ = tts.synthesize(s["say"], speed, prev, nxt)
+            k += 1
             dur = len(wav) / sr
             local.append((cur, cur + dur))
             chunks.append(wav)
@@ -148,6 +153,28 @@ def voice_fx(ep):
     return (fx + "," if fx else "") + "loudnorm=I=-14:TP=-1.5:LRA=11"
 
 
+def audio_args(ep, script_dir, total, voice_idx=1):
+    """목소리 보정 + (있으면) 배경음악 섞기. 말할 때는 배경음악이 자동으로 작아진다(더킹)."""
+    fx = VOICE_FX.get(ep.get("voice_fx", "none"), ep.get("voice_fx", ""))
+    bgm = ep.get("bgm")
+    if not bgm:
+        return [], ["-af", voice_fx(ep)], [f"{voice_idx}:a"]
+    path = Path(bgm["file"])
+    if not path.is_absolute():
+        path = script_dir / path
+    vol = float(bgm.get("volume_db", -22))
+    start = float(bgm.get("start", 0))
+    fade_out = float(bgm.get("fade_out", 3))
+    graph = (
+        f"[{voice_idx}:a]{fx + ',' if fx else ''}asplit=2[v][key];"
+        f"[{voice_idx + 1}:a]atrim=start={start},asetpts=PTS-STARTPTS,volume={vol}dB,"
+        f"afade=t=in:d=1.5,atrim=0:{total:.2f},afade=t=out:st={max(0, total - fade_out):.2f}:d={fade_out}[b];"
+        f"[b][key]sidechaincompress=threshold=0.02:ratio=5:attack=30:release=500[bd];"
+        f"[v][bd]amix=inputs=2:duration=first:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11[a]"
+    )
+    return ["-stream_loop", "-1", "-i", str(path)], ["-filter_complex", graph], ["[a]"]
+
+
 def write_wav(path, samples, sr):
     pcm = (np.clip(samples, -1, 1) * 32767 * 0.95).astype(np.int16)
     with wave.open(str(path), "wb") as w:
@@ -219,6 +246,7 @@ def main(argv=None):
     ap.add_argument("--out", default="output")
     ap.add_argument("--theme", help="영상 스타일 (기본: 대본의 theme, 없으면 midnight)")
     ap.add_argument("--voice", help="TTS 엔진만 바꿔서 만들기: kss | google | elevenlabs")
+    ap.add_argument("--audio-only", action="store_true", help="화면은 그대로 두고 소리만 다시 입히기")
     args = ap.parse_args(argv)
 
     script = Path(args.script)
@@ -260,14 +288,28 @@ def main(argv=None):
     wav = out / "voice.wav"
     write_wav(wav, audio, tts.SAMPLE_RATE)
     mp4 = out / f"{name}.mp4"
+    extra_in, afilter, amap = audio_args(ep, script.parent, total)
+    aout = ["-map", "0:v", "-map", amap[0], *afilter,
+            "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-shortest", "-movflags", "+faststart"]
+
+    if args.audio_only:
+        # 화면은 그대로 두고 소리만 다시 입힌다 (배경음악·목소리 보정 바꿀 때)
+        if not mp4.exists():
+            sys.exit("먼저 영상을 한 번 만들어야 합니다.")
+        tmp = out / "tmp_audio.mp4"
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(mp4), "-i", str(wav), *extra_in,
+                        *aout[:2], "-c:v", "copy", *aout[2:], str(tmp)], check=True)
+        tmp.replace(mp4)
+        print(f"소리만 교체: {mp4}")
+        if not args.short:
+            (out / "description.txt").write_text(description(ep, timeline))
+        return
+
     cmd = ["ffmpeg", "-y", "-loglevel", "error",
            "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{L.W}x{L.H}", "-r", str(FPS), "-i", "-",
-           "-i", str(wav),
+           "-i", str(wav), *extra_in,
            "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p",
-           # 목소리 보정 + 음량을 유튜브 기준(-14 LUFS)에 맞춘다
-           "-af", voice_fx(ep),
-           "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-shortest", "-movflags", "+faststart",
-           str(mp4)]
+           *aout, str(mp4)]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     n = int(total * FPS)
     for f in range(n):
