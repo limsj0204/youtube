@@ -66,7 +66,9 @@ def plan(scenes, speed):
         if sc["type"] == "intro":
             from . import sfx
             from .scenes import Intro
-            seg = seg + 0.6 * sfx.intro(sr, total, Intro.timing(len(sc.get("name", "단어언박싱"))))[: len(seg)]
+            fx = sfx.intro(sr, total, Intro.timing(len(sc.get("name", "단어언박싱"))))
+            fx = np.pad(fx, (0, max(0, len(seg) - len(fx))))[: len(seg)]
+            seg = seg + 0.6 * fx
         audio.append(seg)
         timeline.append({"scene": sc, "start": t, "dur": total, "sents": local, "subs": sents})
         t += total
