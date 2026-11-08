@@ -4,3 +4,5 @@ __pycache__/
 *.pyc
 assets/fonts/*.ttf
 assets/fonts/*.otf
+# 배경음악 원본은 저장소에 올리지 않음 (음원 재배포 금지 약관)
+episodes/*/bgm/
