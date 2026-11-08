@@ -115,7 +115,8 @@ class Hook(Scene):
         draw_text(img, (L.cx, cy), d["word"], font("serif_bold", size), S.INK, e, shadow=True)
         if d.get("icon"):
             k = c.p(d.get("icon_at", 0.4), 0.6)
-            A.place(img, d["icon"], (L.cx + 310 * L.s, cy - 70 * L.s + bob(c.t, 0, 10 * L.s)),
+            ww = S.text_size(d["word"], font("serif_bold", 330 * L.s))[0]   # 단어 길이에 맞춰 오른쪽에
+            A.place(img, d["icon"], (L.cx + ww / 2 + 110 * L.s, cy - 70 * L.s + bob(c.t, 0, 10 * L.s)),
                     240 * L.s * (0.7 + 0.3 * k), k, rotate=-10 * (1 - k))
         # 지워지는 후보들 (예: 한국어? 영어?)
         tags = d.get("strike", [])

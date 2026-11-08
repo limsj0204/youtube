@@ -1,0 +1,341 @@
+# 단어해체소: 짬뽕은 어디서 왔을까
+#
+# 근거 자료: research.md (원문 주소와 확인 여부 정리)
+# 원칙: 가장 유력한 설은 근거와 함께 길게, 다른 설도 충분히 소개한다.
+
+series: 단어해체소
+title: 짬뽕은 어디서 왔을까
+description: |
+  중국집 대표 메뉴 짬뽕, 그런데 이 이름은 중국어가 아닙니다.
+  나가사키에서 태어난 일본어 '잔폰', 그리고 그 이름의 뿌리를 둘러싼 여러 설을 해체해 봅니다.
+  한국 짬뽕이 사실 나가사키 짬뽕과 다른 음식에서 출발했다는 이야기도 함께 담았습니다.
+  어원은 설이 여러 개인 경우가 많습니다. 틀린 부분이 있다면 댓글로 알려주세요.
+theme: magazine_dark
+voice:
+  engine: elevenlabs
+  name: CYbONFCmQ856BE6N5Cqt
+  model: eleven_multilingual_v2
+voice_fx: soft
+bgm:
+  file: bgm/bgm.mp3
+  volume_db: -22
+  fade_out: 3
+speed: 0.95
+tags: [어원, 단어의유래, 외래어, 짬뽕, 나가사키, 초마면, 중국집, 상식]
+
+sources:
+  - 국립국어원 표준국어대사전 '짬뽕' 항목 (stdict.korean.go.kr)
+  - 한국어 위키백과 '짬뽕' 항목과 그 인용 문헌 (경향신문 2017-03-17, 국립국어원 〈우리말 바로 알기〉)
+  - 일본어 위키백과 'ちゃんぽん' 항목과 그 인용 문헌 (『日本語源大辞典』, 『デジタル大辞泉』, 『長崎縣紀要』 1907 등)
+
+credits:
+  - 일러스트 Fluent Emoji (Microsoft, MIT 라이선스)
+  - 국기 Wikimedia Commons (퍼블릭 도메인)
+  - 지도 Natural Earth (퍼블릭 도메인)
+  - 글꼴 Pretendard (SIL OFL)
+  - 내레이션 ElevenLabs
+  - '배경음악: 브금대통령 (https://www.youtube.com/watch?v=oViOPO72QF8)'
+
+fact_check:
+  - 위키백과로만 확인한 내용(시카이로 이야기, 이름 유래 세 가지 설과 반론, 한국 짬뽕의 변화)은 가능하면 원 문헌으로 한 번 더 확인
+
+thumbnail:
+  big: 짬뽕
+  lines: ['일본어?', 이름의 뿌리는 정설이 없다]
+  badge: 단어해체소
+  flags: [jp, kr]
+  map_view: [108, 142, 18, 46]
+  highlight: [Japan, South Korea]
+
+scenes:
+  - type: hook
+    word: 짬뽕
+    icon: icon:steaming_bowl
+    icon_at: 0.3
+    strike: ['중국어?']
+    strike_at: 1
+    reveal: 일본어!
+    reveal_at: 1.6
+    say:
+      - 중국집에서 짜장면과 함께 가장 많이 시키는 메뉴, 짬뽕.
+      - 그런데 이 짬뽕이라는 이름, 사실 중국어가 아니라는 거 알고 계셨나요?
+      - 더 재미있는 건, 이 말이 정확히 어디서 왔는지 아직 아무도 확실히 모른다는 겁니다.
+
+  - type: intro_shatter
+    name: 단어해체소
+    accent_from: 2
+    hold: 2.6
+
+  - type: title
+    title: 짬뽕은 어디서 왔을까
+    subtitle: 나가사키에서 인천까지
+    flags: [jp, kr]
+    hold: 3.4
+
+  # ================================================================ 1. 사전 속 짬뽕
+  - type: chapter
+    chapter: 사전 속 짬뽕
+    num: 1
+    title: 사전 속 짬뽕
+    icon: icon:books
+    subtitle: 원어는 일본어
+    say:
+      - 먼저 사전부터 펼쳐 보겠습니다.
+
+  - type: chain
+    title: '‘짬뽕’이 걸어온 길'
+    icon: icon:steaming_bowl
+    steps:
+      - {lang: 일본어, flag: jp, word: ちゃんぽん, reading: 잔폰}
+      - {lang: 한국어, flag: kr, word: 짬뽕, reading: 짬뽕}
+    reveal: [0, 0.6]
+    note: '뜻 ① 중국요리의 하나   뜻 ② 서로 다른 것을 뒤섞음'
+    note_at: 1
+    say:
+      - say: 표준국어대사전은 짬뽕의 원어를 일본어 잔폰으로 적고 있습니다.
+        sub: 표준국어대사전은 짬뽕의 원어를 일본어 '잔폰(ちゃんぽん)'으로 적고 있습니다.
+      - 뜻도 두 가지인데요. 하나는 우리가 아는 그 음식이고, 다른 하나는 서로 다른 것을 뒤섞는다는 뜻입니다.
+      - say: 술을 섞어 마시는 걸 짬뽕한다고 하죠. 이 표현 역시 일본어에서 들어온 것으로 봅니다.
+        sub: 술을 섞어 마시는 걸 '짬뽕한다'고 하죠. 이 표현 역시 일본어에서 들어온 것으로 봅니다.
+
+  # ================================================================ 2. 나가사키의 짬뽕
+  - type: chapter
+    chapter: 나가사키의 짬뽕
+    num: 2
+    title: 나가사키의 짬뽕
+    icon: icon:steaming_bowl
+    subtitle: 청나라 유학생을 위한 한 그릇
+    say:
+      - 두 번째 이야기는 일본 나가사키에서 시작합니다.
+
+  - type: tableau
+    title: 원조로 알려진 가게, 시카이로
+    layers:
+      - {img: icon:cooking, x: 0.22, y: 0.5, size: 260, at: 0, motion: float, short: {x: 0.5, y: 0.2, size: 220}}
+      - {img: icon:graduation_cap, x: 0.5, y: 0.42, size: 170, at: 1, motion: float, short: {x: 0.3, y: 0.55}}
+      - {img: icon:steaming_bowl, x: 0.78, y: 0.5, size: 260, at: 1.3, motion: float, short: {x: 0.7, y: 0.55}}
+    texts:
+      - {text: '나가사키 · 시카이로(四海樓)', x: 0.22, y: 0.88, size: 44, at: 0, color: accent, font: serif_bold,
+         short: {x: 0.5, y: 0.36}}
+      - {text: '청나라 유학생', x: 0.5, y: 0.7, size: 40, at: 1, short: {x: 0.3, y: 0.7}}
+      - {text: '싸고 영양 많은 한 그릇', x: 0.78, y: 0.88, size: 44, at: 1.3, color: accent, font: serif_bold,
+         short: {x: 0.7, y: 0.7}}
+      - {text: '1907년 기록: 이미 시내 십여 곳에서 판매', x: 0.5, y: 1.02, size: 36, at: 3, color: muted,
+         short: {x: 0.5, y: 0.92}}
+    say:
+      - say: 나가사키 짬뽕의 원조로 알려진 곳은, 지금도 남아 있는 중국 음식점 시카이로입니다.
+        sub: 나가사키 짬뽕의 원조로 알려진 곳은, 지금도 남아 있는 중국 음식점 ‘시카이로(四海樓)’입니다.
+      - say: 메이지 시대 중반, 이곳의 첫 주인 천핑순이 당시 일본에 와 있던 청나라 유학생들에게, 싸고 영양 많은 음식을 먹이려고 만들었다고 전해집니다.
+        sub: 메이지 시대 중반, 이곳의 첫 주인 천핑순(陳平順)이 당시 일본에 와 있던 청나라 유학생들에게, 싸고 영양 많은 음식을 먹이려고 만들었다고 전해집니다.
+      - 다만 그보다 먼저 다른 사람이 같은 이름으로 팔았다는 이야기도 있어서, 원조 역시 한 곳으로 딱 정해지지는 않습니다.
+      - say: 천구백칠 년의 한 기록에는, 이미 나가사키 시내 십여 곳에서 짬뽕을 팔았다고 나옵니다.
+        sub: 1907년의 한 기록에는, 이미 나가사키 시내 십여 곳에서 짬뽕을 팔았다고 나옵니다.
+
+  # ================================================================ 3. 이름의 비밀
+  - type: chapter
+    chapter: 이름의 비밀 (정설 없음)
+    num: 3
+    title: 이름의 비밀
+    icon: icon:speech_balloon
+    subtitle: 정설이 없는 단어
+    say:
+      - 그렇다면 짬뽕이라는 이름은 어디서 왔을까요? 여기서부터는 설이 여러 갈래로 나뉩니다.
+
+  - type: tableau
+    title: 요리보다 먼저 있던 말
+    layers:
+      - {img: icon:bell, x: 0.2, y: 0.42, size: 200, at: 2, motion: float, short: {x: 0.3, y: 0.62, size: 170}}
+      - {img: icon:drum, x: 0.8, y: 0.42, size: 200, at: 2.3, motion: float, short: {x: 0.7, y: 0.62, size: 170}}
+    texts:
+      - {text: '1822년의 한 소설', x: 0.5, y: 0.2, size: 40, at: 1, color: muted, short: {x: 0.5, y: 0.1}}
+      - {text: '「ちゃんぽんの大さわぎ」', x: 0.5, y: 0.34, size: 64, at: 1, font: serif_bold,
+         short: {x: 0.5, y: 0.22, size: 52}}
+      - {text: '뒤죽박죽 대소동', x: 0.5, y: 0.48, size: 40, at: 1.2, color: accent, short: {x: 0.5, y: 0.33}}
+      - {text: '징 소리 ‘찬’', x: 0.2, y: 0.72, size: 48, at: 2, font: serif_bold, short: {x: 0.3, y: 0.8}}
+      - {text: '북 소리 ‘폰’', x: 0.8, y: 0.72, size: 48, at: 2.3, font: serif_bold, short: {x: 0.7, y: 0.8}}
+    say:
+      - 먼저 알아 둘 점이 있습니다. 뒤섞는다는 뜻의 일본어 잔폰은, 요리가 생기기 훨씬 전인 에도 시대부터 쓰였다는 겁니다.
+      - say: 천팔백이십이 년의 한 소설에도, 뒤죽박죽 대소동이라는 뜻으로 이 말이 나옵니다.
+        sub: 1822년의 한 소설에도, ‘뒤죽박죽 대소동’이라는 뜻으로 이 말이 나옵니다.
+      - say: 일본의 어원 사전들은 이 말을, 징 소리 찬과 북 소리 폰을 붙인 소리 흉내말로 많이 설명합니다.
+        sub: 일본의 어원 사전들은 이 말을, 징 소리 ‘찬’과 북 소리 ‘폰’을 붙인 소리 흉내말로 많이 설명합니다.
+
+  - type: theories
+    title: '요리 이름 ‘잔폰’, 세 가지 설'
+    cards:
+      - label: 설 1
+        head: 원래 있던 말
+        chain: ['‘뒤섞음’ (에도 시대)', 요리 이름]
+        body: "여러 재료를 섞어 끓인 요리라\n원래 있던 말이 이름이 되었다"
+        at: 1
+      - label: 설 2
+        head: '‘밥 먹었니?’'
+        chain: ['吃飯 (푸젠 말 인사)', ちゃんぽん]
+        body: "원조 가게 시카이로가\n내세우는 설"
+        at: 2
+      - label: 설 3
+        head: '‘섞다’라는 중국어'
+        chain: ['攙和 · 攙烹', ちゃんぽん]
+        body: "일본의 한 국어사전이 이렇게 설명\n나시 참푸르와 뿌리가 같다는 견해도"
+        at: 3
+    say:
+      - 요리 이름에 대해서는 크게 세 가지 설이 있습니다.
+      - 첫째는 방금 본 것처럼, 원래 있던 뒤섞는다는 말이 여러 재료를 섞어 끓인 요리의 이름이 되었다는 설입니다.
+      - say: 둘째는 원조 가게 시카이로가 내세우는 설로, 푸젠 말로 밥 먹었니라는 인사에서 왔다는 이야기입니다.
+        sub: 둘째는 원조 가게 시카이로가 내세우는 설로, 푸젠 말로 ‘밥 먹었니?(吃飯)’라는 인사에서 왔다는 이야기입니다.
+      - 셋째는 섞다라는 뜻의 중국어에서 왔다는 설로, 일본의 한 국어사전이 이렇게 설명합니다.
+      - say: 인도네시아의 섞은 밥, 나시 참푸르와 뿌리가 같다는 견해도 이 갈래에 속하죠.
+        sub: 인도네시아의 섞은 밥, ‘나시 참푸르’와 뿌리가 같다는 견해도 이 갈래에 속하죠.
+
+  - type: theories
+    title: 그런데, 반론도 있다
+    cards:
+      - label: 설 2의 반론
+        head: 발음이 맞지 않는다
+        chain: ['샤먼 말 · 찹푼', '푸저우 말 · 시엡옹']
+        body: "창업자의 고향 말로 읽으면\n‘잔폰’과 소리가 멀다"
+        at: 1
+      - label: 설 3의 반론
+        head: 이것도 소리가 다르다
+        body: "‘섞다’라는 한자 가운데 일부는\n푸저우 말이나 민난어로 읽으면\n소리가 맞지 않는다는 지적"
+        at: 2
+    stamp: {text: 정설 없음, at: 3}
+    say:
+      - 하지만 두 설에는 모두 반론이 있습니다.
+      - 밥 먹었니는 샤먼 지방 말로는 찹푼에 가깝지만, 창업자의 고향 말인 푸저우 말로는 시엡옹에 가까워 소리가 맞지 않는다는 지적이 있습니다.
+      - 섞다라는 뜻의 한자 가운데 일부도, 푸저우 말이나 민난어로 읽으면 소리가 맞지 않는다고 하죠.
+      - 결국 짬뽕이라는 이름의 뿌리는, 지금도 정설 없이 여러 설이 함께 전해지고 있습니다.
+
+  # ================================================================ 4. 한국의 짬뽕
+  - type: chapter
+    chapter: 한국의 짬뽕
+    num: 4
+    title: 한국의 짬뽕
+    icon: icon:hot_pepper
+    subtitle: 음식은 산둥에서, 이름은 나가사키에서
+    say:
+      - 그런데 한국 짬뽕은, 사실 나가사키 짬뽕과 다른 음식에서 출발했습니다.
+
+  - type: map
+    title: 두 갈래의 짬뽕
+    view: [100, 150, 18.5, 42]
+    view_short: [113, 135, 22, 41]
+    highlight: [Japan, South Korea]
+    routes:
+      - start: 0
+        end: 0
+        head: icon:steaming_bowl
+        via: [[119.75, 26.0], [121.5, 27.2], [125.0, 30.0], [128.5, 32.2], [129.75, 32.7]]
+      - start: 1
+        end: 2
+        color: accent2
+        head: icon:steaming_bowl
+        via: [[121.45, 37.65], [123.0, 37.9], [125.2, 37.6], [126.45, 37.42]]
+    pins:
+      - {name: '푸젠 · 燜麵', lon: 119.3, lat: 26.08, at: 0, dx: -150, dy: -10}
+      - {name: '나가사키 · ちゃんぽん', icon: flag:jp, lon: 129.87, lat: 32.75, at: 0.8, dx: 30, dy: 70}
+      - {name: '산둥 · 炒碼麵', lon: 121.45, lat: 37.46, at: 1, dx: -170, dy: -10, color: accent2}
+      - {name: '인천 · 짬뽕', icon: flag:kr, lon: 126.63, lat: 37.46, at: 2.2, dx: 60, dy: 70, color: accent2}
+    say:
+      - say: 나가사키 짬뽕의 뿌리는 중국 남쪽 푸젠 지방의 먼몐이라는 국수입니다.
+        sub: 나가사키 짬뽕의 뿌리는 중국 남쪽 푸젠 지방의 ‘먼몐(燜麵)’이라는 국수입니다.
+      - say: 반면 한국 짬뽕은 중국 북쪽 산둥 지방의 초마면에서 왔습니다.
+        sub: 반면 한국 짬뽕은 중국 북쪽 산둥 지방의 ‘초마면(炒碼麵)’에서 왔습니다.
+      - 이십 세기 초부터 한국에 살던 화교들이 이 음식을 소개했죠.
+      - 그런데 일제 강점기에 이 초마면을 본 일본인들이 나가사키 짬뽕과 비슷하다며 짬뽕이라고 불렀고, 그 이름이 그대로 굳어졌다고 합니다.
+
+  - type: timeline
+    title: 빨간 짬뽕이 되기까지
+    events:
+      - {year: '20세기 초', icon: icon:steaming_bowl, label: '화교의 초마면', at: 0}
+      - {year: '일제 강점기', icon: icon:speech_balloon, label: '‘짬뽕’이라는 이름', at: 0.5}
+      - {year: '1960년대', icon: icon:hot_pepper, label: 매운맛이 더해짐, at: 1}
+      - {year: '1980년대', icon: icon:hot_pepper, label: 매운 짬뽕이 곧 짬뽕, at: 2}
+    say:
+      - 처음 한국 짬뽕의 국물은 지금과 달리, 맑고 뿌연 색이었다고 합니다.
+      - say: 천구백육십 년대부터 고춧가루와 매운맛이 더해졌고,
+        sub: 1960년대부터 고춧가루와 매운맛이 더해졌고,
+      - say: 천구백팔십 년대에는 원래의 하얀 짬뽕은 사라지고, 매운 짬뽕만 짬뽕이라고 부르게 되었다고 하죠.
+        sub: 1980년대에는 원래의 하얀 짬뽕은 사라지고, 매운 짬뽕만 짬뽕이라고 부르게 되었다고 하죠.
+      - 지금도 중국집에서 맛볼 수 있는 하얀 굴짬뽕이, 그 옛 모습에 가깝다고 합니다.
+
+  # ================================================================ 정리
+  - type: summary
+    chapter: 정리
+    title: 오늘 해체한 단어
+    rows:
+      - {word: 이름, icon: icon:speech_balloon, path: ちゃんぽん → 짬뽕, at: 0}
+      - {word: 일본 짬뽕, icon: icon:steaming_bowl, path: 푸젠 燜麵 → 나가사키, at: 0.3}
+      - {word: 한국 짬뽕, icon: icon:hot_pepper, path: 산둥 炒碼麵 → 인천, at: 0.6}
+      - {word: 이름의 뿌리, icon: icon:books, path: '원래 있던 말 · 밥 먹었니 · 섞다 (정설 없음)', at: 0.9}
+    say:
+      - 정리해 보면, 짬뽕이라는 이름은 일본어에서 왔지만, 그 일본어의 뿌리는 아직 정설이 없습니다.
+      - 그리고 한국의 짬뽕은 음식은 산둥에서, 이름은 나가사키에서 온, 말 그대로 짬뽕 같은 음식인 셈이죠.
+
+  - type: sources
+    title: 참고 자료
+    sources:
+      - 국립국어원 표준국어대사전 '짬뽕'
+      - 한국어 위키백과 '짬뽕' · 일본어 위키백과 'ちゃんぽん' 및 인용 문헌
+      - 'Fluent Emoji (Microsoft, MIT) · 국기 Wikimedia Commons · Natural Earth'
+    say:
+      - 오늘 이야기는 여기까지입니다. 시청해 주셔서 감사합니다.
+
+  - type: outro
+    name: 단어해체소
+    accent_from: 2
+    hold: 10
+
+# ==================================================================== 쇼츠 (홍보용)
+shorts:
+  kicker: 단어해체소
+  header: '‘짬뽕’은 일본어?'
+  scenes:
+    - type: hook
+      word: 짬뽕
+      icon: icon:steaming_bowl
+      icon_at: 0.2
+      strike: ['중국어?']
+      strike_at: 0.4
+      reveal: 일본어!
+      reveal_at: 0.8
+      say:
+        - 중국집 대표 메뉴 짬뽕, 이름은 사실 중국어가 아닙니다.
+
+    - type: chain
+      steps:
+        - {lang: 일본어, flag: jp, word: ちゃんぽん, reading: 잔폰}
+        - {lang: 한국어, flag: kr, word: 짬뽕, reading: 짬뽕}
+      reveal: [0, 0.6]
+      say:
+        - say: 일본어 잔폰에서 온 말인데, 그 잔폰이 어디서 왔는지는 아직 정설이 없죠.
+          sub: 일본어 ‘잔폰(ちゃんぽん)’에서 온 말인데, 그 잔폰이 어디서 왔는지는 아직 정설이 없죠.
+
+    - type: map
+      view: [100, 150, 18.5, 42]
+      view_short: [113, 135, 22, 41]
+      highlight: [Japan, South Korea]
+      routes:
+        - start: 0
+          end: 0
+          head: icon:steaming_bowl
+          via: [[119.75, 26.0], [121.5, 27.2], [125.0, 30.0], [128.5, 32.2], [129.75, 32.7]]
+        - start: 0.5
+          end: 0
+          color: accent2
+          head: icon:steaming_bowl
+          via: [[121.45, 37.65], [123.0, 37.9], [125.2, 37.6], [126.45, 37.42]]
+      pins:
+        - {name: '푸젠', lon: 119.3, lat: 26.08, at: 0, dx: -20, dy: 60}
+        - {name: '나가사키', icon: flag:jp, lon: 129.87, lat: 32.75, at: 0.5, dx: 20, dy: 60}
+        - {name: '산둥', lon: 121.45, lat: 37.46, at: 0.4, dx: -20, dy: -60, color: accent2}
+        - {name: '인천', icon: flag:kr, lon: 126.63, lat: 37.46, at: 0.9, dx: 40, dy: 60, color: accent2}
+      say:
+        - 게다가 한국 짬뽕은 나가사키 짬뽕과 다른, 산둥 지방의 초마면에서 출발한 음식입니다.
+
+    - type: summary
+      rows:
+        - {word: 일본 짬뽕, icon: icon:steaming_bowl, path: 푸젠 → 나가사키, at: 0}
+        - {word: 한국 짬뽕, icon: icon:hot_pepper, path: 산둥 → 인천, at: 0.4}
+      say:
+        - 음식은 산둥에서, 이름은 나가사키에서. 말 그대로 짬뽕인 셈이죠.
