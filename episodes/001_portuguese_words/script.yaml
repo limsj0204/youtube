@@ -460,11 +460,3 @@ shorts:
         - {word: 담배, icon: icon:leaf_fluttering_in_wind, path: tabaco → タバコ → 담바고, at: 0.6}
       say:
         - 카스텔라도, 담배도 같은 길을 따라 왔습니다.
-
-    - type: cta
-      small: '‘담바고’는 어떻게 ‘담배’가 됐을까?'
-      text: "전체 이야기는\n본편에서"
-      button: ▶ 본편 보러 가기
-      button_at: 0.5
-      say:
-        - 담바고가 어떻게 담배가 됐는지, 전체 이야기는 본편에서 확인하세요.
