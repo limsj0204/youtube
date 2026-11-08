@@ -342,6 +342,14 @@ class Map(Scene):
             else:
                 r = 10 * L.s
                 dr.ellipse((pos[0] - r, pos[1] - r, pos[0] + r, pos[1] + r), fill=S.INK)
+        # 지역 이름 (점 없이 땅 위에 크게, 흐리게)
+        for lab in d.get("labels", []):
+            a = c.p(lab.get("at", 0), 0.6)
+            if a <= 0:
+                continue
+            x, y = self.proj(lab["lon"], lab["lat"])
+            draw_text(img, (x, y), lab["text"], font("sans_bold", lab.get("size", 64) * L.s),
+                      S.INK, 0.55 * a, anchor="mm")
         # 지명 핀
         for pin in d.get("pins", []):
             a = c.p(pin.get("at", 0), 0.4)
