@@ -7,6 +7,7 @@
     episodes/.../img/scene1.png                   → 그 밖의 경로는 파일 그대로 (AI 이미지 등)
 """
 import io
+import math
 from functools import lru_cache
 from pathlib import Path
 
@@ -87,4 +88,12 @@ def _paste(img, im, center, alpha, rotate):
     if alpha < 0.99:
         im = im.copy()
         im.putalpha(im.getchannel("A").point(lambda v: int(v * alpha)))
-    img.paste(im, (int(center[0] - im.width / 2), int(center[1] - im.height / 2)), im)
+    # 소수점 위치까지 반영 (정수로 자르면 느린 움직임이 '움직임-멈춤'으로 끊겨 보인다)
+    x = center[0] - im.width / 2
+    y = center[1] - im.height / 2
+    ix, iy = math.floor(x), math.floor(y)
+    fx, fy = x - ix, y - iy
+    if fx > 0.02 or fy > 0.02:
+        im = im.transform((im.width + 1, im.height + 1), Image.AFFINE, (1, 0, -fx, 0, 1, -fy),
+                          resample=Image.BILINEAR)
+    img.paste(im, (ix, iy), im)
