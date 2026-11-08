@@ -128,3 +128,23 @@ def intro(sr, dur, timing, style="full"):
     elif style == "minimal":
         mix_at(buf, soft_chime(sr), timing["title"], sr)
     return np.clip(buf, -1, 1)
+
+
+def tick(sr, pitch=1200.0, dur=0.06):
+    """부품이 놓이는 작은 '톡'."""
+    n = int(dur * sr)
+    t = np.arange(n) / sr
+    return np.sin(2 * np.pi * pitch * t) * _env(n, 0.001, 0.012, sr) * 0.12
+
+
+def intro_dismantle(sr, dur, timing, n_parts=5):
+    """단어해체소 인트로 효과음: 툭(떨어짐) → 스윽(절단) → 톡톡(부품) → 띵(제목)."""
+    buf = np.zeros(int(dur * sr), np.float32)
+    mix_at(buf, thump(sr) * 0.9, timing["drop"], sr)
+    c0, c1 = timing["cut"]
+    mix_at(buf, cut(sr, c1 - c0) * 0.5, c0, sr)
+    mix_at(buf, thump(sr, 0.15) * 0.5, timing["split"], sr)
+    for k in range(n_parts):
+        mix_at(buf, tick(sr, 900 + k * 120), timing["parts"] - 0.2 + k * 0.05, sr)
+    mix_at(buf, soft_chime(sr), timing["title"], sr)
+    return np.clip(buf, -1, 1)

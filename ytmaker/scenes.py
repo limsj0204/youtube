@@ -921,8 +921,164 @@ class Intro(Scene):
         img.paste(layer, (int(tip[0] - px), int(tip[1] - oy)), layer)
 
 
+# 한글 음절 → 자모 (호환 자모)
+_CHO = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ"
+_JUNG = "ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ"
+_JONG = ["", "ㄱ", "ㄲ", "ㄳ", "ㄴ", "ㄵ", "ㄶ", "ㄷ", "ㄹ", "ㄺ", "ㄻ", "ㄼ", "ㄽ", "ㄾ", "ㄿ", "ㅀ", "ㅁ",
+         "ㅂ", "ㅄ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"]
+
+
+def jamo(ch):
+    """'단' → [('ㄷ','초성'), ('ㅏ','중성'), ('ㄴ','종성')]"""
+    code = ord(ch) - 0xAC00
+    if not 0 <= code < 11172:
+        return [(ch, "")]
+    cho, jung, jong = code // 588, (code % 588) // 28, code % 28
+    out = [(_CHO[cho], "초성"), (_JUNG[jung], "중성")]
+    if jong:
+        out.append((_JONG[jong], "종성"))
+    return out
+
+
+class IntroDismantle(Scene):
+    """채널 인트로 '단어해체소': 단어 블록이 떨어지고 → 절단선으로 쪼개지고
+    → 자음·모음 부품으로 분해돼 분해도처럼 늘어서고 → 채널 이름 → 확대되며 다음 장면.
+
+    - type: intro_dismantle
+      word: 단어          # 해체할 단어
+      name: 단어해체소
+      accent_from: 2
+      hold: 3.3
+    """
+    DROP, CUT0, CUT1, SPLIT, EXPLODE0, EXPLODE1, TITLE, EXIT = 0.45, 0.6, 0.95, 1.0, 1.2, 1.75, 1.85, 2.75
+
+    @classmethod
+    def timing(cls, n=0):
+        return {"drop": cls.DROP, "cut": (cls.CUT0, cls.CUT1), "split": cls.SPLIT,
+                "parts": cls.EXPLODE1, "title": cls.TITLE}
+
+    def prepare(self, L):
+        super().prepare(L)
+        d = self.d
+        self.word = d.get("word", "단어")
+        self.name = d.get("name", "단어해체소")
+        k = d.get("accent_from", 2)
+        self.parts_name = (self.name[:k], self.name[k:])
+        s = L.s
+        self.card_w, self.card_h = 720 * s, 380 * s
+        # 부품(자모) 최종 위치: 음절별로 묶어서 한 줄로
+        self.pieces = []
+        gap_in, gap_out, step = 165 * s, 110 * s, 0
+        groups = [jamo(ch) for ch in self.word]
+        widths = [len(g) * gap_in for g in groups]
+        total = sum(widths) - gap_in * 0 + gap_out * (len(groups) - 1)
+        x = L.cx - total / 2 + gap_in / 2
+        for gi, g in enumerate(groups):
+            for j, (jm, role) in enumerate(g):
+                self.pieces.append({"ch": jm, "role": role, "syl": gi, "x": x, "k": len(self.pieces)})
+                x += gap_in
+            x += gap_out - gap_in + gap_in
+            x -= gap_in
+            x += gap_in
+
+    def draw(self, img, c):
+        L, s, t, dur = self.L, self.L.s, c.t, c.dur
+        cx, cy = L.cx, L.cy - 60 * s
+        # 마지막: 확대되며 사라짐
+        ex = S.clamp((t - self.EXIT) / max(0.1, dur - self.EXIT))
+        z = 1 + 2.5 * ex ** 2.2
+        fade = 1 - ex ** 1.5
+        if ex > 0:
+            canvas = S.background(L.W, L.H).copy()
+        else:
+            canvas = img
+        def P(x, y):
+            return (L.cx + (x - L.cx) * z, L.cy + (y - L.cy) * z)
+        dr = ImageDraw.Draw(canvas)
+        n = len(self.word)
+        cw, ch = self.card_w * z, self.card_h * z
+
+        # 1) 블록이 떨어짐 (살짝 튕김)
+        if t < self.DROP:
+            k = (t / self.DROP) ** 2
+            dy = -(L.H * 0.7) * (1 - k)
+        elif t < self.DROP + 0.18:
+            dy = -18 * s * math.sin(math.pi * (t - self.DROP) / 0.18)
+        else:
+            dy = 0
+        split = S.ease_out((t - self.SPLIT) / 0.25)
+        explode = S.ease_in_out((t - self.EXPLODE0) / (self.EXPLODE1 - self.EXPLODE0))
+        card_alpha = 1 - S.clamp((t - self.EXPLODE0 + 0.05) / 0.12)
+        if card_alpha > 0.01:
+            fsz = 250 * s * z
+            f = font("serif_bold", fsz)
+            for i, sy in enumerate(self.word):
+                # 쪼개지면 각 조각이 양옆으로 벌어짐
+                off = (i - (n - 1) / 2) * 80 * s * split
+                x0 = cx - self.card_w / 2 + self.card_w * i / n + off
+                x1 = x0 + self.card_w / n
+                (ax, ay), (bx, by) = P(x0, cy - self.card_h / 2 + dy), P(x1, cy + self.card_h / 2 + dy)
+                S.rounded_box(canvas, (ax, ay, bx, by), int(8 * s), S.INK, alpha=card_alpha)
+                mx, my = P((x0 + x1) / 2, cy + dy)
+                draw_text(canvas, (mx, my), sy, f, S.BG_TOP, card_alpha)
+            # 2) 절단선 (위에서 아래로)
+            if self.CUT0 <= t < self.SPLIT + 0.1:
+                kk = S.clamp((t - self.CUT0) / (self.CUT1 - self.CUT0))
+                for i in range(1, n):
+                    xs = cx - self.card_w / 2 + self.card_w * i / n
+                    top = cy - self.card_h / 2 - 40 * s
+                    bot = top + (self.card_h + 80 * s) * kk
+                    dr.line([P(xs, top), P(xs, bot)], fill=S.ACCENT, width=max(2, int(6 * s * z)))
+                    S.glow(canvas, P(xs, bot), 50 * s * z, S.ACCENT, 0.8)
+
+        # 3) 자모 부품으로 분해 → 분해도처럼 한 줄로
+        if t >= self.EXPLODE0:
+            fj = font("sans_bold", 190 * s * z)
+            fl = font("sans", 36 * s * z)
+            row_y = cy - 30 * s
+            for pc in self.pieces:
+                gi = pc["syl"]
+                sx = cx - self.card_w / 2 + self.card_w * (gi + 0.5) / n + (gi - (n - 1) / 2) * 80 * s
+                k = S.clamp(explode * 1.15 - pc["k"] * 0.04)
+                e = 1 + 2.70158 * (k - 1) ** 3 + 1.70158 * (k - 1) ** 2   # 살짝 넘쳤다 돌아옴
+                x = sx + (pc["x"] - sx) * e
+                y = cy + (row_y - cy) * e - math.sin(math.pi * k) * 60 * s
+                px, py = P(x, y)
+                a = 1.0 if t >= self.EXPLODE0 + 0.03 else 0.0      # 블록이 사라지는 순간 바로 보이게
+                draw_text(canvas, (px, py), pc["ch"], fj, S.INK, a)
+                # 부품 이름표 + 지시선
+                la = S.clamp((t - self.EXPLODE1 + 0.15) / 0.3)
+                if la > 0 and pc["role"]:
+                    lx, ly = P(pc["x"], row_y + 150 * s)
+                    dr.line([P(pc["x"], row_y + 105 * s), P(pc["x"], row_y + 126 * s)],
+                            fill=S.mix(S.BG_TOP, S.MUTED, la), width=max(1, int(2 * s * z)))
+                    draw_text(canvas, (lx, ly), pc["role"], fl, S.ACCENT if pc["role"] == "종성" else S.MUTED, la)
+
+        # 4) 채널 이름
+        ta = appear(t, self.TITLE, 0.4)
+        if ta > 0:
+            ft = font("serif_bold", 140 * s * z)
+            f0 = font("serif_bold", 140 * s)            # 위치 계산은 확대 전 크기로
+            w1 = S.text_size(self.parts_name[0], f0)[0]
+            w2 = S.text_size(self.parts_name[1], f0)[0]
+            ty = cy + 320 * s + (1 - ta) * 25 * s
+            left = cx - (w1 + w2) / 2
+            p1, p2 = P(left + w1 / 2, ty), P(left + w1 + w2 / 2, ty)
+            draw_text(canvas, p1, self.parts_name[0], ft, S.INK, ta)
+            draw_text(canvas, p2, self.parts_name[1], ft, S.ACCENT, ta)
+            # 밑줄
+            uw = (w1 + w2) * z * S.ease_out((t - self.TITLE - 0.15) / 0.4)
+            ux, uy = P(cx, ty + 95 * s)
+            if uw > 1:
+                dr.line([(ux - uw / 2, uy), (ux + uw / 2, uy)], fill=S.ACCENT, width=max(2, int(5 * s * z)))
+
+        if ex > 0:
+            img.paste(Image.blend(S.background(L.W, L.H), canvas, max(0.0, fade)))
+
+
 TYPES = {
     "hook": Hook, "title": Title, "chapter": Chapter, "chain": Chain, "map": Map,
     "timeline": Timeline, "theories": Theories, "summary": Summary, "sources": Sources,
     "cta": Cta, "tableau": Tableau, "intro": Intro,
+    "intro_dismantle": IntroDismantle,
 }
