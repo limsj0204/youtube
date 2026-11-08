@@ -147,3 +147,27 @@ def intro_dismantle(sr, dur, timing, n_parts=5):
         mix_at(buf, tick(sr, 900 + k * 120), timing["parts"] - 0.2 + k * 0.05, sr)
     mix_at(buf, soft_chime(sr), timing["title"], sr)
     return np.clip(buf, -1, 1)
+
+
+def boom(sr, dur=0.5):
+    """이름이 박힐 때 낮고 묵직한 '쿵' (바람 소리 없음)."""
+    n = int(dur * sr)
+    t = np.arange(n) / sr
+    freq = 95 * np.exp(-t * 7) + 42
+    y = np.sin(2 * np.pi * np.cumsum(freq) / sr) * _env(n, 0.003, 0.14, sr)
+    return y / (np.abs(y).max() + 1e-9) * 0.55
+
+
+def crack(sr, dur=0.09):
+    """쪼개질 때 짧고 단단한 '탁' (고음 잡음 없이)."""
+    n = int(dur * sr)
+    t = np.arange(n) / sr
+    y = (np.sin(2 * np.pi * 420 * t) + 0.5 * np.sin(2 * np.pi * 180 * t)) * _env(n, 0.0008, 0.018, sr)
+    return y / (np.abs(y).max() + 1e-9) * 0.4
+
+
+def intro_shatter(sr, dur, timing):
+    buf = np.zeros(int(dur * sr), np.float32)
+    mix_at(buf, boom(sr), timing["slam"], sr)
+    mix_at(buf, crack(sr), timing["break"], sr)
+    return np.clip(buf, -1, 1)

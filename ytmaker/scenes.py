@@ -1076,9 +1076,110 @@ class IntroDismantle(Scene):
             img.paste(Image.blend(S.background(L.W, L.H), canvas, max(0.0, fade)))
 
 
+_VERTICAL_VOWELS = set("ㅏㅐㅑㅒㅓㅔㅕㅖㅣ")
+
+
+class IntroShatter(Scene):
+    """채널 인트로: 채널 이름이 쾅 하고 박힌 뒤, 자음·모음으로 쪼개져 사방으로 흩어진다.
+
+    - type: intro_shatter
+      name: 단어해체소
+      accent_from: 2
+      hold: 2.6
+    """
+    SLAM, BREAK, GONE = 0.22, 1.05, 2.15
+
+    @classmethod
+    def timing(cls, n=0):
+        return {"slam": cls.SLAM, "break": cls.BREAK}
+
+    def prepare(self, L):
+        super().prepare(L)
+        import random
+        d = self.d
+        s = L.s
+        self.name = d.get("name", "단어해체소")
+        k = d.get("accent_from", 2)
+        self.size = 210 * s
+        f = font("serif_bold", self.size)
+        widths = [S.text_size(ch, f)[0] for ch in self.name]
+        gap = 6 * s
+        total = sum(widths) + gap * (len(widths) - 1)
+        x = L.cx - total / 2
+        self.syl = []
+        for i, (ch, w) in enumerate(zip(self.name, widths)):
+            self.syl.append({"ch": ch, "x": x + w / 2, "w": w, "col": S.ACCENT if i >= k else S.INK})
+            x += w + gap
+        # 자모 조각: 음절 안 대략적인 자리(초성 왼쪽/위, 중성 오른쪽/아래, 종성 아래)에서 출발
+        rnd = random.Random(11)
+        fp = font("serif_bold", self.size * 0.7)
+        self.pieces = []
+        for sy in self.syl:
+            parts = jamo(sy["ch"])
+            vert = parts[1][0] in _VERTICAL_VOWELS if len(parts) > 1 else True
+            h = self.size
+            for jm, role in parts:
+                if role == "초성":
+                    ox, oy = (-0.2 * sy["w"], -0.17 * h if len(parts) == 3 else 0) if vert else (0, -0.2 * h)
+                elif role == "중성":
+                    ox, oy = (0.24 * sy["w"], -0.17 * h if len(parts) == 3 else 0) if vert else (0, 0.14 * h)
+                else:
+                    ox, oy = 0, 0.27 * h
+                # 조각 그림 (한 번만 만들어 두고 매 프레임 회전)
+                tw, th = S.text_size(jm, fp)
+                layer = Image.new("RGBA", (int(tw + 40 * s), int(self.size * 0.8)), (0, 0, 0, 0))
+                draw_text(layer, (layer.width / 2, layer.height / 2), jm, fp, sy["col"])
+                ang = math.atan2(oy - 0.05 * h, ox + (sy["x"] - L.cx) * 0.6) + rnd.uniform(-0.5, 0.5)
+                speed = rnd.uniform(900, 1700) * s
+                self.pieces.append({
+                    "img": layer, "x": sy["x"] + ox, "y": L.cy + oy,
+                    "vx": math.cos(ang) * speed, "vy": math.sin(ang) * speed - rnd.uniform(200, 600) * s,
+                    "spin": rnd.uniform(-420, 420), "delay": rnd.uniform(0, 0.06),
+                })
+
+    def draw(self, img, c):
+        L, s, t = self.L, self.L.s, c.t
+        # 박힐 때 화면 흔들림
+        shake = 0.0
+        if self.SLAM <= t < self.SLAM + 0.3:
+            k = (t - self.SLAM) / 0.3
+            shake = 14 * s * (1 - k) * math.sin(k * math.pi * 7)
+        if t < self.BREAK:
+            # 1) 크게 들어오며 쾅
+            k = S.clamp(t / self.SLAM)
+            scale = 1.0 + 0.8 * (1 - k) ** 2
+            a = min(1.0, k * 2.5)
+            f = font("serif_bold", self.size * scale)
+            for sy in self.syl:
+                x = L.cx + (sy["x"] - L.cx) * scale + shake
+                draw_text(img, (x, L.cy + shake * 0.4), sy["ch"], f, sy["col"], a)
+            # 박힌 직후 아래 밑줄이 빠르게 그어짐
+            u = S.ease_out((t - self.SLAM) / 0.35)
+            if u > 0:
+                tot = self.syl[-1]["x"] + self.syl[-1]["w"] / 2 - (self.syl[0]["x"] - self.syl[0]["w"] / 2)
+                y = L.cy + self.size * 0.62
+                ImageDraw.Draw(img).line([(L.cx - tot / 2 * u + shake, y), (L.cx + tot / 2 * u + shake, y)],
+                                         fill=S.ACCENT, width=max(2, int(7 * s)))
+            return
+        # 2) 자음·모음으로 쪼개져 흩어짐 (중력, 회전, 사라짐)
+        dt = t - self.BREAK
+        g = 1700 * s
+        for pc in self.pieces:
+            tt = max(0.0, dt - pc["delay"])
+            x = pc["x"] + pc["vx"] * tt
+            y = pc["y"] + pc["vy"] * tt + 0.5 * g * tt * tt
+            a = 1 - S.clamp(tt / (self.GONE - self.BREAK))
+            if a <= 0.01:
+                continue
+            im = pc["img"].rotate(pc["spin"] * tt, expand=True, resample=Image.BICUBIC)
+            if a < 0.99:
+                im.putalpha(im.getchannel("A").point(lambda v: int(v * a)))
+            img.paste(im, (int(x - im.width / 2), int(y - im.height / 2)), im)
+
+
 TYPES = {
     "hook": Hook, "title": Title, "chapter": Chapter, "chain": Chain, "map": Map,
     "timeline": Timeline, "theories": Theories, "summary": Summary, "sources": Sources,
     "cta": Cta, "tableau": Tableau, "intro": Intro,
-    "intro_dismantle": IntroDismantle,
+    "intro_dismantle": IntroDismantle, "intro_shatter": IntroShatter,
 }
