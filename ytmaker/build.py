@@ -248,7 +248,9 @@ def main(argv=None):
            "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{L.W}x{L.H}", "-r", str(FPS), "-i", "-",
            "-i", str(wav),
            "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p",
-           "-c:a", "aac", "-b:a", "160k", "-ar", "44100", "-shortest", "-movflags", "+faststart",
+           # 음량을 유튜브 기준(-14 LUFS)에 맞춘다
+           "-af", "loudnorm=I=-14:TP=-1.5:LRA=11",
+           "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-shortest", "-movflags", "+faststart",
            str(mp4)]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     n = int(total * FPS)
