@@ -18,7 +18,9 @@ SCRIPT = Path(__file__).resolve().parent.parent / "episodes/001_portuguese_words
 def sample_text():
     ep = yaml.safe_load(SCRIPT.read_text())
     out = []
-    for sc in ep["scenes"][:4]:                        # 도입부 + 빵 어원 카드
+    picks = [sc for sc in ep["scenes"] if sc["type"] == "hook"][:1] + \
+            [sc for sc in ep["scenes"] if sc["type"] == "chain"][:1]          # 도입부 + 빵 어원 카드
+    for sc in picks:
         for s in sc.get("say", []) or []:
             out.append(s if isinstance(s, str) else s["say"])
     return out
