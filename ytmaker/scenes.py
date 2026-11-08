@@ -744,137 +744,162 @@ class Tableau(Scene):
 
 class Intro(Scene):
     """채널 인트로 (위에서 내려다본 상자).
-    닫힌 상자 → 커터칼이 테이프를 따라 자름 → 날개가 양옆으로 젖혀짐
-    → 상자 안에 채널 이름 → 그 안으로 끝없이 줌인하며 다음 장면으로.
+    닫힌 상자 → 커터칼이 가로 테이프를 길게 자름 → 날개가 위아래로 젖혀짐
+    → 상자 안에 채널 이름 → 살짝 뒤로 물러났다가 확 빨려 들어가는 줌으로 다음 장면.
 
     - type: intro
       name: 단어언박싱
       accent_from: 2      # 이 글자부터 강조색
-      hold: 3.3
+      hold: 2.8
     """
-    APPEAR, CUT0, CUT1, OPEN0, OPEN1, TITLE, ZOOM = 0.0, 0.3, 1.0, 1.05, 1.5, 1.35, 1.95
+    CUT0, CUT1 = 0.22, 0.85          # 칼질
+    OPEN0, OPEN1 = 0.9, 1.25         # 날개 열림
+    TITLE = 1.1                      # 제목 등장
+    PULL0, RUSH0 = 1.7, 1.9          # 뒤로 살짝 물러남 → 돌진
+    ZMAX = 40.0
     KRAFT, KRAFT_DARK, KRAFT_IN = (198, 146, 92), (150, 104, 60), (222, 184, 132)
     TAPE = (226, 204, 160)
 
     @classmethod
     def timing(cls, n=0):
-        return {"cut": (cls.CUT0, cls.CUT1), "open": cls.OPEN0, "title": cls.TITLE, "zoom": cls.ZOOM}
+        return {"cut": (cls.CUT0, cls.CUT1), "open": cls.OPEN0, "title": cls.TITLE, "zoom": cls.RUSH0}
 
     def prepare(self, L):
         super().prepare(L)
-        self.bw = min(980 * L.s, L.W * 0.84)
-        self.bh = self.bw * 0.62
+        self.bw = min(900 * L.s, L.W * 0.84)
+        self.bh = self.bw * 0.6
         self.name = self.d.get("name", "단어언박싱")
         k = self.d.get("accent_from", 2)
         self.parts = (self.name[:k], self.name[k:])
-        # 바닥 안쪽 폭에 맞는 제목 크기 (확대 전 기준)
-        inner = self.bw - 2 * 90 * L.s
+        inner = self.bw - 2 * 80 * L.s
         size = 200 * L.s
         while size > 40 and S.text_size(self.name, font("serif_bold", size))[0] > inner * 0.86:
             size -= 4
         self.title_size = size
 
+    def _zoom(self, t, dur):
+        """줌 배율과 회전: 살짝 물러났다가(예비 동작) 지수적으로 빨려 들어감."""
+        if t < self.PULL0:
+            return 1.0, 0.0
+        if t < self.RUSH0:
+            k = S.ease_out((t - self.PULL0) / (self.RUSH0 - self.PULL0))
+            return 1 - 0.09 * k, 0.0
+        u = S.clamp((t - self.RUSH0) / max(0.1, dur - 0.12 - self.RUSH0))
+        e = u ** 2.2                                   # 처음엔 느리게, 끝으로 갈수록 급격히
+        z = 0.91 * math.exp(math.log(self.ZMAX / 0.91) * e)
+        return z, 7 * e
+
     def draw(self, img, c):
-        L, s, t = self.L, self.L.s, c.t
-        cx, cy = L.cx, L.cy + (40 * s if L.short else 10 * s)
-        dur = c.dur
-        # 줌: 제목(상자 가운데)을 향해 점점 빨라지며 확대
-        u = S.clamp((t - self.ZOOM) / max(0.1, dur - self.ZOOM))
-        z = 1 + 26 * u ** 2.6
-        appear_k = S.ease_out((t - self.APPEAR) / 0.3)
-        z *= 0.94 + 0.06 * appear_k
+        L, t, dur = self.L, c.t, c.dur
+        if t > self.RUSH0 + 0.05:
+            # 돌진 구간: 앞선 순간들을 겹쳐 그려 모션 블러
+            frames = []
+            for dt in (0.0, 1 / 90, 2 / 90):
+                im = S.background(L.W, L.H).copy()
+                self._draw_at(im, max(0.0, t - dt), dur)
+                frames.append(im)
+            out = Image.blend(Image.blend(frames[2], frames[1], 0.5), frames[0], 0.5)
+            img.paste(out)
+        else:
+            self._draw_at(img, t, dur)
+        # 끝: 배경색으로 빠르게 녹아들며 다음 장면으로
+        if t > dur - 0.15:
+            k = S.clamp((t - (dur - 0.15)) / 0.15)
+            img.paste(Image.blend(img, S.background(L.W, L.H), k))
 
-        def P(x, y):
-            return (cx + (x - cx) * z, cy + (y - cy) * z)
-
+    def _draw_at(self, img, t, dur):
+        L, s = self.L, self.L.s
+        cx, cy = L.cx, L.cy
+        z, rot = self._zoom(t, dur)
+        appear_k = S.ease_out(t / 0.25)
+        z *= 0.95 + 0.05 * appear_k
+        canvas = img if not rot else S.background(L.W, L.H).copy()
+        dr = ImageDraw.Draw(canvas)
         bw, bh = self.bw * z, self.bh * z
         x0, y0 = cx - bw / 2, cy - bh / 2
         x1, y1 = x0 + bw, y0 + bh
-        dr = ImageDraw.Draw(img)
+        lw = lambda v: max(1, int(v * s * min(z, 6)))
 
-        # 그림자 (확대되면 생략)
-        if z < 1.6:
+        if z < 1.4:
             sh = Image.new("RGBA", (int(bw + 120 * s), int(bh + 120 * s)), (0, 0, 0, 0))
-            ImageDraw.Draw(sh).rectangle((60 * s, 70 * s, bw + 60 * s, bh + 70 * s),
+            ImageDraw.Draw(sh).rectangle((60 * s, 72 * s, bw + 60 * s, bh + 72 * s),
                                          fill=(0, 0, 0, int(160 * appear_k)))
             sh = sh.filter(ImageFilter.GaussianBlur(26 * s))
-            img.paste(sh, (int(x0 - 60 * s), int(y0 - 60 * s)), sh)
+            canvas.paste(sh, (int(x0 - 60 * s), int(y0 - 60 * s)), sh)
 
-        # 상자 안쪽: 네 벽 + 바닥 (위에서 본 깊이감)
-        inset = 90 * s * z
+        # 상자 안쪽 (네 벽 + 바닥)
+        inset = 80 * s * z
         ix0, iy0, ix1, iy1 = x0 + inset, y0 + inset, x1 - inset, y1 - inset
-        dr.polygon([(x0, y0), (x1, y0), (ix1, iy0), (ix0, iy0)], fill=(110, 74, 42))      # 위쪽 벽
-        dr.polygon([(x0, y0), (ix0, iy0), (ix0, iy1), (x0, y1)], fill=(92, 62, 36))       # 왼쪽 벽
-        dr.polygon([(x1, y0), (x1, y1), (ix1, iy1), (ix1, iy0)], fill=(76, 50, 28))       # 오른쪽 벽
-        dr.polygon([(x0, y1), (ix0, iy1), (ix1, iy1), (x1, y1)], fill=(64, 42, 24))       # 아래쪽 벽
-        dr.rectangle((ix0, iy0, ix1, iy1), fill=(44, 29, 17))                              # 바닥
-        dr.rectangle((x0, y0, x1, y1), outline=self.KRAFT_DARK, width=max(2, int(10 * s * z)))
+        dr.polygon([(x0, y0), (x1, y0), (ix1, iy0), (ix0, iy0)], fill=(110, 74, 42))
+        dr.polygon([(x0, y0), (ix0, iy0), (ix0, iy1), (x0, y1)], fill=(92, 62, 36))
+        dr.polygon([(x1, y0), (x1, y1), (ix1, iy1), (ix1, iy0)], fill=(76, 50, 28))
+        dr.polygon([(x0, y1), (ix0, iy1), (ix1, iy1), (x1, y1)], fill=(64, 42, 24))
+        dr.rectangle((ix0, iy0, ix1, iy1), fill=(44, 29, 17))
+        dr.rectangle((x0, y0, x1, y1), outline=self.KRAFT_DARK, width=lw(10))
 
         # 바닥의 제목
-        ta = appear(t, self.TITLE, 0.45)
+        ta = appear(t, self.TITLE, 0.35)
         if ta > 0:
-            S.glow(img, (cx, cy), min(2000, 420 * s * z), S.ACCENT, 0.5 * ta)
-            size = self.title_size * z * (0.92 + 0.08 * ta)
-            if size < 3000:
+            size = self.title_size * z * (0.9 + 0.1 * ta)
+            if size < 2600:
                 f = font("serif_bold", size)
                 w1 = S.text_size(self.parts[0], f)[0]
                 w2 = S.text_size(self.parts[1], f)[0]
                 left = cx - (w1 + w2) / 2
-                draw_text(img, (left + w1 / 2, cy), self.parts[0], f, S.INK, ta)
-                draw_text(img, (left + w1 + w2 / 2, cy), self.parts[1], f, S.ACCENT, ta)
+                draw_text(canvas, (left + w1 / 2, cy), self.parts[0], f, S.INK, ta)
+                draw_text(canvas, (left + w1 + w2 / 2, cy), self.parts[1], f, S.ACCENT, ta)
 
-        # 날개: 왼쪽은 왼쪽 끝, 오른쪽은 오른쪽 끝을 축으로 바깥으로 젖혀짐 (위에서 본 투영)
+        # 날개: 위 날개는 윗변, 아래 날개는 아랫변을 축으로 바깥으로 젖혀짐
         ok = S.ease_in_out((t - self.OPEN0) / (self.OPEN1 - self.OPEN0))
-        theta = math.pi * ok
-        cosv = math.cos(theta)
-        half = bw / 2
-        tape_w = 120 * s * z
-        for side in (-1, 1):
-            hinge = x0 if side < 0 else x1
-            far = hinge - side * half * cosv          # 날개 끝의 x 위치
-            xa, xb = sorted((hinge, far))
-            if xb - xa < 1:
+        cosv = math.cos(math.pi * ok)
+        half = bh / 2
+        tape_h = 110 * s * z
+        for side in (-1, 1):                       # -1 = 위 날개, 1 = 아래 날개
+            hinge = y0 if side < 0 else y1
+            far = hinge - side * half * cosv
+            ya, yb = sorted((hinge, far))
+            if yb - ya < 1:
                 continue
             outer = cosv >= 0
             shade = 0.55 + 0.45 * abs(cosv)
-            base = self.KRAFT if outer else self.KRAFT_IN
-            col = tuple(int(v * shade) for v in base)
-            dr.rectangle((xa, y0, xb, y1), fill=col)
+            col = tuple(int(v * shade) for v in (self.KRAFT if outer else self.KRAFT_IN))
+            dr.rectangle((x0, ya, x1, yb), fill=col)
             if outer:
-                # 이 날개에 붙은 테이프 반쪽 (가운데 이음새 쪽)
-                tw = tape_w / 2 * cosv
-                tx0, tx1 = sorted((far, far + side * tw))
-                dr.rectangle((tx0, y0 - 18 * s * z, tx1, y1 + 18 * s * z), fill=self.TAPE)
-            # 날개 접히는 선
-            dr.line([(hinge, y0), (hinge, y1)], fill=self.KRAFT_DARK, width=max(1, int(4 * s * z)))
-        # 칼집 (테이프 가운데를 따라 위에서 아래로)
-        kk = S.clamp((t - (self.CUT0 - 0.15)) / (self.CUT1 + 0.25 - (self.CUT0 - 0.15)))
-        knife_y = y0 - 220 * s + (bh + 440 * s) * kk
-        if ok < 0.02 and knife_y > y0 - 18 * s * z:
-            yc = min(knife_y, y1 + 18 * s * z)
-            dr.line([(cx, y0 - 18 * s * z), (cx, yc)], fill=(70, 46, 24), width=max(2, int(5 * s * z)))
-        # 커터칼
-        if self.CUT0 - 0.15 <= t <= self.CUT1 + 0.25:
-            self._knife(img, (cx, knife_y), s * 2.1)
-        # 줌 끝: 배경색으로 녹아들며 다음 장면으로
-        if t > dur - 0.35:
-            k = S.clamp((t - (dur - 0.35)) / 0.35)
-            img.paste(Image.blend(img, S.background(L.W, L.H), k))
+                th_ = tape_h / 2 * cosv
+                ta0, ta1 = sorted((far, far + side * th_))
+                dr.rectangle((x0 - 18 * s * z, ta0, x1 + 18 * s * z, ta1), fill=self.TAPE)
+            dr.line([(x0, hinge), (x1, hinge)], fill=self.KRAFT_DARK, width=lw(4))
+
+        # 칼집 + 커터칼 (왼쪽에서 오른쪽으로 길게)
+        kk = S.clamp((t - (self.CUT0 - 0.12)) / (self.CUT1 + 0.2 - (self.CUT0 - 0.12)))
+        kk = S.ease_in_out(kk)
+        knife_x = x0 - 200 * s + (bw + 400 * s) * kk
+        if ok < 0.02 and knife_x > x0 - 18 * s * z:
+            xc = min(knife_x, x1 + 18 * s * z)
+            dr.line([(x0 - 18 * s * z, cy), (xc, cy)], fill=(70, 46, 24), width=lw(5))
+        if self.CUT0 - 0.12 <= t <= self.CUT1 + 0.2:
+            self._knife(canvas, (knife_x, cy), s * 2.0)
+
+        if rot:
+            canvas = canvas.rotate(rot, resample=Image.BILINEAR, center=(cx, cy),
+                                   fillcolor=S.BG_TOP)
+            img.paste(canvas)
 
     def _knife(self, img, tip, s):
-        """커터칼: 날 끝이 tip 에 오도록, 손잡이가 오른쪽 위로."""
+        """커터칼: 날 끝이 tip, 손잡이는 왼쪽 위 (오른쪽으로 끌고 가는 방향)."""
         layer = Image.new("RGBA", (int(520 * s), int(520 * s)), (0, 0, 0, 0))
         d = ImageDraw.Draw(layer)
         ox, oy = 60 * s, 340 * s
-        # 날 (은색 사다리꼴) → 손잡이 (강조색)
         d.polygon([(ox, oy), (ox + 120 * s, oy - 34 * s), (ox + 150 * s, oy + 20 * s), (ox + 30 * s, oy + 26 * s)],
                   fill=(214, 220, 228))
         d.line([(ox, oy), (ox + 150 * s, oy + 20 * s)], fill=(160, 168, 178), width=max(1, int(3 * s)))
         d.rounded_rectangle((ox + 130 * s, oy - 46 * s, ox + 420 * s, oy + 40 * s), int(20 * s), fill=S.ACCENT)
         d.rounded_rectangle((ox + 170 * s, oy - 30 * s, ox + 380 * s, oy - 8 * s), int(8 * s),
                             fill=S.mix(S.ACCENT, (255, 255, 255), 0.35))
-        layer = layer.rotate(35, resample=Image.BICUBIC, center=(ox, oy))
-        img.paste(layer, (int(tip[0] - ox), int(tip[1] - oy)), layer)
+        layer = layer.rotate(40, resample=Image.BICUBIC, center=(ox, oy))
+        layer = layer.transpose(Image.FLIP_LEFT_RIGHT)
+        px = layer.width - ox
+        img.paste(layer, (int(tip[0] - px), int(tip[1] - oy)), layer)
 
 
 TYPES = {

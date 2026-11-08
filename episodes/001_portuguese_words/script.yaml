@@ -55,7 +55,7 @@ scenes:
   - type: intro
     name: 단어언박싱
     accent_from: 2
-    hold: 3.3
+    hold: 2.8
 
   - type: title
     title: 포르투갈에서 온 단어들
