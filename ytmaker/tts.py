@@ -34,7 +34,7 @@ SAMPLE_RATE = 24000          # 모든 엔진의 결과를 이 샘플레이트로
 
 DEFAULTS = {
     "kss": {"name": "kss"},
-    "google": {"name": "ko-KR-Chirp3-HD-Charon"},
+    "google": {"name": "ko-KR-Chirp3-HD-Charon", "comma_pause": True},
     "elevenlabs": {"name": "pNInz6obpgDQGcFmaJgB", "model": "eleven_multilingual_v2"},
 }
 VOICE = {"engine": "kss", **DEFAULTS["kss"]}
