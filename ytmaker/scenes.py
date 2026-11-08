@@ -47,6 +47,8 @@ class Clock:
         """문장 번호(소수 가능) → 장면 안 시각. 0.5 = 0번 문장의 중간."""
         if not self.sents:
             return x
+        if x < 0:          # 음수 = 장면 시작 전부터 이미 보이는 상태 (앞 장면에서 이어짐)
+            return -10.0
         i = int(math.floor(x))
         frac = x - i
         if i >= len(self.sents):
@@ -91,6 +93,8 @@ class Scene:
         L = self.L
         x, y, w, _ = L.stage
         a = c.p(0, 0.6) if c.sents else appear(c.t, 0)
+        if self.d.get("continued"):      # 앞 장면에서 이어지는 장면은 제목을 다시 띄우지 않음
+            a = 1.0
         f = font("sans_bold", 54 * L.s)
         draw_text(img, (L.cx, y + 40 * L.s), text, f, S.INK, a, dy=(1 - a) * 20)
         if self.d.get("icon"):
@@ -561,6 +565,8 @@ class Theories(Scene):
             boxes = [(x0 + i * (bw + gap), y, bw, ch) for i in range(n)]
 
         for i, (card, (bx, by, bw_, bh), (items, _, pad)) in enumerate(zip(cards, boxes, lays)):
+            if card.get("hide"):          # 자리는 잡아 두되 아직 보이지 않음 (다음 장면에서 등장)
+                continue
             a = c.p(card.get("at", i), 0.5)
             if a <= 0:
                 continue
