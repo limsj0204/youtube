@@ -134,6 +134,20 @@ def render_frame(t, timeline, L, ep, objs):
     return img
 
 
+# 목소리 보정 프리셋 (대본의 voice_fx 로 선택)
+VOICE_FX = {
+    "none": "",
+    # 날카로움 줄이기: 저음 채우기, 고음 깎기, 치찰음(ㅅ ㅆ ㅊ) 누르기
+    "soft": "equalizer=f=200:t=q:w=1:g=3.5,equalizer=f=3000:t=q:w=1:g=-1.5,"
+            "equalizer=f=6500:t=q:w=1:g=-5,deesser=i=0.5,lowpass=f=11000",
+}
+
+
+def voice_fx(ep):
+    fx = VOICE_FX.get(ep.get("voice_fx", "none"), ep.get("voice_fx", ""))
+    return (fx + "," if fx else "") + "loudnorm=I=-14:TP=-1.5:LRA=11"
+
+
 def write_wav(path, samples, sr):
     pcm = (np.clip(samples, -1, 1) * 32767 * 0.95).astype(np.int16)
     with wave.open(str(path), "wb") as w:
@@ -156,6 +170,8 @@ def description(ep, timeline):
             chapters.append((item["start"], item["scene"]["chapter"]))
     lines += [f"{fmt_ts(t)} {name}" for t, name in chapters]
     lines += ["", "📚 참고 자료"] + [f"- {s}" for s in ep.get("sources", [])]
+    if ep.get("credits"):
+        lines += ["", "🎨 사용한 자료"] + [f"- {c}" for c in ep["credits"]]
     if ep.get("tags"):
         lines += ["", " ".join("#" + t for t in ep["tags"])]
     return "\n".join(lines) + "\n"
@@ -248,8 +264,8 @@ def main(argv=None):
            "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{L.W}x{L.H}", "-r", str(FPS), "-i", "-",
            "-i", str(wav),
            "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p",
-           # 음량을 유튜브 기준(-14 LUFS)에 맞춘다
-           "-af", "loudnorm=I=-14:TP=-1.5:LRA=11",
+           # 목소리 보정 + 음량을 유튜브 기준(-14 LUFS)에 맞춘다
+           "-af", voice_fx(ep),
            "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-shortest", "-movflags", "+faststart",
            str(mp4)]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)

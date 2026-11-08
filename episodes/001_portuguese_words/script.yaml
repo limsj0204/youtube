@@ -20,6 +20,7 @@ voice:                      # 내레이션 목소리 (ElevenLabs, 한국어 여�
   engine: elevenlabs
   name: CYbONFCmQ856BE6N5Cqt
   model: eleven_multilingual_v2
+voice_fx: soft              # 목소리 보정 (날카로움 줄이기)
 speed: 0.95   # 말하기 속도 (1.0 = 기본)
 tags: [어원, 단어의유래, 외래어, 포르투갈어, 빵, 카스텔라, 담배, 상식]
 
@@ -28,6 +29,13 @@ sources:
   - 국립국어원 우리말샘 '담바고 타령' 항목 (opendict.korean.go.kr)
   - 일본어 위키백과 'カステラ', 'タバコ', 'パン', '南蛮貿易', '鉄砲伝来' 항목과 그 인용 문헌
   - "ホセ・ゴロチャテギ「ビスコチョの歴史」『カステラ文化誌全書』 (일본어 위키백과 재인용)"
+
+credits:
+  - 일러스트 Fluent Emoji (Microsoft, MIT 라이선스)
+  - 국기 flag-icons (MIT 라이선스)
+  - 지도 Natural Earth (퍼블릭 도메인)
+  - 글꼴 Pretendard (SIL OFL)
+  - 내레이션 ElevenLabs
 
 fact_check:   # 업로드 전 확인 목록 (research.md 참고)
   - 위키백과로만 확인한 내용(카스텔라 옛 문헌 기록, tabaco 기원 두 설)은 가능하면 원 문헌으로 한 번 더 확인
