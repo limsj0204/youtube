@@ -212,6 +212,8 @@ def main(argv=None):
     if args.voice and args.voice != voice.get("engine"):
         voice = {"engine": args.voice}
     tts.configure(voice)
+    if tts.VOICE["engine"] != "kss":
+        tts.STORE_DIR = script.parent / "voice" / tts.VOICE["engine"]
     L = Layout(short=args.short)
     scenes = ep["shorts"]["scenes"] if args.short else ep["scenes"]
     name = script.parent.name + ("_short" if args.short else "")
@@ -222,6 +224,9 @@ def main(argv=None):
     speed = args.speed or ep.get("speed", 0.95)
     timeline, audio, total = plan(scenes, speed)
     print(f"음성 생성 완료: {len(scenes)}개 장면, 총 {total:.1f}초 ({time.time() - t0:.1f}s)")
+    u = tts.USAGE
+    print(f"음성 요청: 새로 만든 문장 {u['requests']}개 (사용 크레딧 {u['credits']}), "
+          f"저장된 음성 재사용 {u['cached']}개")
     objs = []
     for item in timeline:
         obj = TYPES[item["scene"]["type"]](item["scene"])

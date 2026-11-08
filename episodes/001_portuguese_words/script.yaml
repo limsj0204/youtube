@@ -16,6 +16,10 @@ description: |
   어원은 설이 여러 개인 경우가 많습니다. 영상에서는 가장 유력한 설을 중심으로, 다른 설들도 함께 소개합니다.
   틀린 부분이 있다면 댓글로 알려주세요.
 theme: magazine_dark
+voice:                      # 내레이션 목소리 (ElevenLabs, 한국어 여성 'Danbi - Clear & Calm')
+  engine: elevenlabs
+  name: CYbONFCmQ856BE6N5Cqt
+  model: eleven_multilingual_v2
 speed: 0.95   # 말하기 속도 (1.0 = 기본)
 tags: [어원, 단어의유래, 외래어, 포르투갈어, 빵, 카스텔라, 담배, 상식]
 

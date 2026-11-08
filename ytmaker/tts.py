@@ -38,6 +38,8 @@ DEFAULTS = {
     "elevenlabs": {"name": "pNInz6obpgDQGcFmaJgB", "model": "eleven_multilingual_v2"},
 }
 VOICE = {"engine": "kss", **DEFAULTS["kss"]}
+USAGE = {"requests": 0, "credits": 0, "cached": 0}
+STORE_DIR = None             # 유료 엔진 음성을 보관할 곳 (에피소드 폴더, git 에 저장해 세션이 바뀌어도 재사용)
 
 _kss = None
 
@@ -67,14 +69,48 @@ def clean(text):
     return re.sub(r"\s+", " ", text).strip()
 
 
+def _key(text, speed):
+    sig = json.dumps(VOICE, sort_keys=True, ensure_ascii=False)
+    return hashlib.sha1(f"{sig}|{speed}|{SAMPLE_RATE}|{text}".encode()).hexdigest()[:16]
+
+
+def _store_load(key):
+    """에피소드 폴더에 보관된 음성 (FLAC, 무손실 압축)."""
+    if STORE_DIR is None:
+        return None
+    f = STORE_DIR / f"{key}.flac"
+    if not f.exists():
+        return None
+    import subprocess
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-i", str(f), "-f", "s16le", "-ac", "1",
+                          "-ar", str(SAMPLE_RATE), "-"], capture_output=True, check=True).stdout
+    return np.frombuffer(raw, dtype=np.int16).astype(np.float32) / 32768
+
+
+def _store_save(key, x):
+    if STORE_DIR is None:
+        return
+    import subprocess
+    STORE_DIR.mkdir(parents=True, exist_ok=True)
+    pcm = (np.clip(x, -1, 1) * 32767).astype(np.int16).tobytes()
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "s16le", "-ar", str(SAMPLE_RATE), "-ac", "1",
+                    "-i", "-", "-compression_level", "8", str(STORE_DIR / f"{key}.flac")],
+                   input=pcm, check=True)
+
+
 def synthesize(text, speed=1.0):
     text = clean(text)
-    sig = json.dumps(VOICE, sort_keys=True, ensure_ascii=False)
-    key = hashlib.sha1(f"{sig}|{speed}|{SAMPLE_RATE}|{text}".encode()).hexdigest()[:16]
+    key = _key(text, speed)
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     path = CACHE_DIR / f"{key}.npy"
     if path.exists():
+        USAGE["cached"] += 1
         return np.load(path), SAMPLE_RATE
+    stored = _store_load(key)
+    if stored is not None:
+        USAGE["cached"] += 1
+        np.save(path, stored)
+        return stored, SAMPLE_RATE
     engine = VOICE["engine"]
     if engine == "google":
         x, sr = _google(text, speed)
@@ -85,6 +121,8 @@ def synthesize(text, speed=1.0):
     x = _resample(np.asarray(x, dtype=np.float32), sr, SAMPLE_RATE)
     x = _trim(x, SAMPLE_RATE)
     np.save(path, x)
+    if engine != "kss":
+        _store_save(key, x)
     return x, SAMPLE_RATE
 
 
@@ -110,6 +148,10 @@ def _post(url, body, headers):
                                  headers={"Content-Type": "application/json", **headers})
     try:
         with urllib.request.urlopen(req, timeout=120) as r:
+            USAGE["requests"] += 1
+            cost = r.headers.get("Character-Cost")
+            if cost and cost.isdigit():
+                USAGE["credits"] += int(cost)
             return r.read()
     except urllib.error.HTTPError as e:
         raise SystemExit(f"TTS 요청 실패 ({e.code}): {e.read()[:300].decode(errors='ignore')}")
