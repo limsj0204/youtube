@@ -116,13 +116,13 @@ def intro(sr, dur, timing, style="full"):
     buf = np.zeros(int(dur * sr), np.float32)
     c0, c1 = timing["cut"]
     if style == "full":
-        mix_at(buf, cut(sr, c1 - c0), c0, sr)
+        # (칼로 긋는 '스윽' 소리는 넣지 않음)
         mix_at(buf, rustle(sr, 0.35), timing["open"], sr)
         if "open2" in timing:
             mix_at(buf, rustle(sr, 0.3) * 0.8, timing["open2"], sr)
         mix_at(buf, pop(sr, 700), timing["title"], sr)
     elif style == "clean":
-        mix_at(buf, cut(sr, min(0.45, c1 - c0)) * 0.6, c0 + 0.1, sr)
+        # (칼로 긋는 '스윽' 소리는 넣지 않음)
         mix_at(buf, thump(sr), timing["open"] + 0.05, sr)
         mix_at(buf, soft_chime(sr), timing["title"], sr)
     elif style == "minimal":
@@ -141,8 +141,7 @@ def intro_dismantle(sr, dur, timing, n_parts=5):
     """단어해체소 인트로 효과음: 툭(떨어짐) → 스윽(절단) → 톡톡(부품) → 띵(제목)."""
     buf = np.zeros(int(dur * sr), np.float32)
     mix_at(buf, thump(sr) * 0.9, timing["drop"], sr)
-    c0, c1 = timing["cut"]
-    mix_at(buf, cut(sr, c1 - c0) * 0.5, c0, sr)
+    # (칼로 긋는 '스윽' 소리는 넣지 않음)
     mix_at(buf, thump(sr, 0.15) * 0.5, timing["split"], sr)
     for k in range(n_parts):
         mix_at(buf, tick(sr, 900 + k * 120), timing["parts"] - 0.2 + k * 0.05, sr)
