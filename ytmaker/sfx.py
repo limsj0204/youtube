@@ -54,15 +54,24 @@ def mix_at(buf, clip, t, sr):
         buf[i:j] += clip[: j - i]
 
 
+def _smooth(x, n):
+    """이동 평균 (간단한 저역 통과)."""
+    k = np.ones(n) / n
+    return np.convolve(x, k, mode="same")
+
+
 def cut(sr, dur):
-    """커터칼로 테이프를 긋는 '지익'."""
+    """커터칼로 테이프를 긋는 부드러운 '스윽'.
+    날카로운 고음(치익)과 낮은 웅웅거림을 걸러내고 가운데 대역만 남긴다."""
     n = int(dur * sr)
     rng = np.random.default_rng(3)
-    x = np.diff(rng.normal(0, 1, n), prepend=0)
+    x = rng.normal(0, 1, n)
+    band = _smooth(x, 7) - _smooth(x, 40)            # 약 550Hz ~ 3kHz 만 남김
+    texture = 0.8 + 0.2 * _smooth(rng.normal(0, 1, n), int(sr * 0.03)) * 8   # 아주 느린 결
     t = np.arange(n) / sr
-    grain = 0.55 + 0.45 * np.sign(np.sin(2 * np.pi * 38 * t))     # 테이프 결을 긁는 느낌
-    env = np.clip(t / 0.05, 0, 1) * np.clip((dur - t) / 0.08, 0, 1)
-    return x * grain * env * 0.16
+    env = np.sin(np.pi * np.clip(t / dur, 0, 1)) ** 1.5                     # 부드럽게 커졌다 작아짐
+    y = band * np.clip(texture, 0.5, 1.1) * env
+    return y / (np.abs(y).max() + 1e-9) * 0.3
 
 
 def whoosh(sr, dur):
