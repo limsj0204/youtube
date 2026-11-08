@@ -222,13 +222,29 @@ def thumbnail(ep, path):
         base = geo.base_map((W, H), proj, set(th.get("highlight", [])))
         base.putalpha(base.getchannel("A").point(lambda v: int(v * 0.55)))
         img.paste(base, (0, 0), base)
+    # 왼쪽 큰 글자: 두 글자는 세로로 쌓고, 칸(560x620)에 맞게 크기 자동 조절
+    big = th.get("big", "")
     S.glow(img, (330, 360), 330, S.ACCENT, 0.55)
-    S.draw_text(img, (330, 350), th.get("big", ""), S.font("serif_bold", 400), S.INK, shadow=True)
+    rows = list(big) if len(big) == 2 else [big]
+    size = 420
+    while size > 120:
+        f = S.font("serif_bold", size)
+        if max(S.text_size(r, f)[0] for r in rows) <= 560 and size * 0.95 * len(rows) <= 570:
+            break
+        size -= 10
+    f = S.font("serif_bold", size)
+    step = size * 0.95
+    top = 360 - step * (len(rows) - 1) / 2
+    for i, r in enumerate(rows):
+        S.draw_text(img, (330, top + i * step), r, f, S.INK, shadow=True)
+    # 오른쪽 글: 너비(600)에 맞게 자동 조절
     y = 250
     for i, line in enumerate(th.get("lines", [])):
-        f = S.font("serif_bold", 104 if i == 0 else 64)
+        fs = 104 if i == 0 else 64
+        while fs > 30 and S.text_size(line, S.font("serif_bold", fs))[0] > 600:
+            fs -= 4
         col = S.ACCENT if i == 0 else S.INK
-        S.draw_text(img, (640, y), line, f, col, anchor="lm", shadow=True)
+        S.draw_text(img, (640, y), line, S.font("serif_bold", fs), col, anchor="lm", shadow=True)
         y += 130 if i == 0 else 90
     if th.get("flags"):
         from . import assets as A
