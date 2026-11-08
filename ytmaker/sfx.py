@@ -90,14 +90,41 @@ def whoosh(sr, dur):
     return y / (np.abs(y).max() + 1e-9) * env * 0.5
 
 
-def intro(sr, dur, timing):
-    """인트로 장면 효과음."""
+def thump(sr, dur=0.22):
+    """종이 상자 날개가 '툭' 열리는 낮고 부드러운 소리."""
+    n = int(dur * sr)
+    t = np.arange(n) / sr
+    freq = 140 * np.exp(-t * 9) + 70
+    body = np.sin(2 * np.pi * np.cumsum(freq) / sr)
+    rng = np.random.default_rng(5)
+    paper = _smooth(rng.normal(0, 1, n), 12) * np.exp(-t * 60) * 0.6
+    y = (body * 0.8 + paper) * _env(n, 0.004, 0.05, sr)
+    return y / (np.abs(y).max() + 1e-9) * 0.35
+
+
+def soft_chime(sr, dur=1.6):
+    """은은한 '띵' (배음 적게, 천천히 사라짐)."""
+    n = int(dur * sr)
+    t = np.arange(n) / sr
+    s = np.sin(2 * np.pi * 784 * t) + 0.35 * np.sin(2 * np.pi * 1568 * t) * np.exp(-t * 4)
+    return s * _env(n, 0.01, 0.5, sr) * 0.12
+
+
+def intro(sr, dur, timing, style="full"):
+    """인트로 장면 효과음.
+    style: full(처음 버전) | clean(깔끔하게) | minimal(제목 '띵'만) | none(없음)"""
     buf = np.zeros(int(dur * sr), np.float32)
     c0, c1 = timing["cut"]
-    mix_at(buf, cut(sr, c1 - c0), c0, sr)
-    mix_at(buf, rustle(sr, 0.35), timing["open"], sr)
-    if "open2" in timing:
-        mix_at(buf, rustle(sr, 0.3) * 0.8, timing["open2"], sr)
-    mix_at(buf, pop(sr, 700), timing["title"], sr)
-    # 줌인 구간은 효과음 없이 (빨려 들어가는 소리는 뺐음)
+    if style == "full":
+        mix_at(buf, cut(sr, c1 - c0), c0, sr)
+        mix_at(buf, rustle(sr, 0.35), timing["open"], sr)
+        if "open2" in timing:
+            mix_at(buf, rustle(sr, 0.3) * 0.8, timing["open2"], sr)
+        mix_at(buf, pop(sr, 700), timing["title"], sr)
+    elif style == "clean":
+        mix_at(buf, cut(sr, min(0.45, c1 - c0)) * 0.6, c0 + 0.1, sr)
+        mix_at(buf, thump(sr), timing["open"] + 0.05, sr)
+        mix_at(buf, soft_chime(sr), timing["title"], sr)
+    elif style == "minimal":
+        mix_at(buf, soft_chime(sr), timing["title"], sr)
     return np.clip(buf, -1, 1)
