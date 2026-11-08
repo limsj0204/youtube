@@ -4,6 +4,9 @@
       engine: google            # kss(무료, 비상업) | google | elevenlabs
       name: ko-KR-Chirp3-HD-Charon
       rate: 1.0
+      comma_pause: true         # (google) 쉼표 자리에서 확실히 쉬기
+
+대본에서 쉼표가 없는 곳에 쉬고 싶으면 `/` 를 적는다. 예: "그런데 이 빵이라는 말 / 원래는"
 
 엔진별 API 키
   - google:     작업 환경의 네트워크 비밀값(헤더 X-Goog-Api-Key) 또는 환경 변수 GOOGLE_TTS_API_KEY
@@ -58,7 +61,10 @@ def clean(text):
     text = re.sub(r"[‘’“”'\"「」『』()\[\]]", "", text)
     if VOICE["engine"] == "kss":
         text = text.replace("?", ".").replace("!", ".")
-    return text.replace("·", ",").replace("…", ",").strip()
+    text = text.replace("·", ",").replace("…", ",")
+    if VOICE["engine"] != "google":
+        text = text.replace(" / ", ", ").replace("/", ", ")
+    return re.sub(r"\s+", " ", text).strip()
 
 
 def synthesize(text, speed=1.0):
@@ -115,8 +121,15 @@ def _post(url, body, headers):
 def _google(text, speed):
     # 키는 작업 환경의 네트워크 비밀값으로 프록시가 넣어 준다. 없으면 환경 변수를 쓴다.
     key = os.environ.get("GOOGLE_TTS_API_KEY", "set-by-proxy")
+    # 쉼표와 / 자리에 쉼 표시를 넣는다 (Chirp 3 HD 의 markup 기능)
+    if VOICE.get("comma_pause", True) and ("," in text or "/" in text):
+        marked = re.sub(r"\s*/\s*", " [pause] ", text)
+        marked = re.sub(r",\s*", ", [pause] ", marked)
+        inp = {"markup": re.sub(r"(\[pause\]\s*)+", "[pause] ", marked).strip()}
+    else:
+        inp = {"text": text.replace("/", " ")}
     body = {
-        "input": {"text": text},
+        "input": inp,
         "voice": {"languageCode": "ko-KR", "name": VOICE["name"]},
         "audioConfig": {"audioEncoding": "LINEAR16", "sampleRateHertz": SAMPLE_RATE,
                         "speakingRate": float(VOICE.get("rate", 1.0)) * speed},
