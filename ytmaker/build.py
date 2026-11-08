@@ -68,10 +68,12 @@ def plan(scenes, speed):
         pad = int(round(total * sr)) - sum(len(c) for c in chunks)
         chunks.append(np.zeros(max(0, pad), np.float32))
         seg = np.concatenate(chunks)[: int(round(total * sr))]
-        if sc["type"] in ("intro", "intro_dismantle", "intro_shatter"):
+        if sc["type"] in ("intro", "intro_dismantle", "intro_shatter", "outro"):
             from . import sfx
-            from .scenes import Intro, IntroDismantle, IntroShatter, jamo
-            if sc["type"] == "intro_shatter":
+            from .scenes import Intro, IntroDismantle, IntroShatter, OutroAssemble, jamo
+            if sc["type"] == "outro":
+                fx = sfx.outro_assemble(sr, total, OutroAssemble.timing())
+            elif sc["type"] == "intro_shatter":
                 fx = sfx.intro_shatter(sr, total, IntroShatter.timing())
             elif sc["type"] == "intro":
                 fx = sfx.intro(sr, total, Intro.timing(len(sc.get("name", "단어언박싱"))), sc.get("sfx", "full"))
@@ -127,7 +129,7 @@ def render_frame(t, timeline, L, ep, objs):
     objs[k].draw(img, clock)
     if L.short:
         header(img, L, ep)
-    elif sc["type"] not in ("hook", "title", "intro", "intro_dismantle", "intro_shatter"):
+    elif sc["type"] not in ("hook", "title", "intro", "intro_dismantle", "intro_shatter", "outro"):
         watermark(img, L, ep)
     # 장면 전환: 처음 0.25초 동안 배경에서 서서히 나타남
     if lt < 0.25 and k > 0:

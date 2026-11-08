@@ -1177,9 +1177,94 @@ class IntroShatter(Scene):
             img.paste(im, (int(x - im.width / 2), int(y - im.height / 2)), im)
 
 
+class OutroAssemble(IntroShatter):
+    """채널 아웃트로: 흩어진 자모 조각이 날아와 채널 이름으로 조립된 뒤,
+    로고가 위로 올라가고 유튜브 최종 화면(추천 영상·구독) 자리를 비워 둔다.
+
+    - type: outro
+      name: 단어해체소
+      accent_from: 2
+      endscreen: true      # 최종 화면 카드 자리 표시
+      hold: 10
+    """
+    ASSEMBLE, LIFT0, LIFT1 = 1.4, 2.5, 3.3
+
+    @classmethod
+    def timing(cls, n=0):
+        return {"assemble": cls.ASSEMBLE}
+
+    def prepare(self, L):
+        super().prepare(L)
+        import random
+        rnd = random.Random(23)
+        s = L.s
+        for pc in self.pieces:
+            ang = rnd.uniform(0, 2 * math.pi)
+            dist = rnd.uniform(900, 1400) * s
+            pc["sx"] = pc["x"] + math.cos(ang) * dist
+            pc["sy"] = pc["y"] + math.sin(ang) * dist * 0.7
+            pc["spin0"] = rnd.uniform(-540, 540)
+            pc["lag"] = rnd.uniform(0, 0.25)
+
+    def draw(self, img, c):
+        L, s, t = self.L, self.L.s, c.t
+        dr = ImageDraw.Draw(img)
+        if t < self.ASSEMBLE:
+            # 1) 조각들이 날아와 제자리로 (끝으로 갈수록 느려짐, 회전도 멈춤)
+            for pc in self.pieces:
+                k = S.clamp((t - pc["lag"]) / (self.ASSEMBLE - pc["lag"]))
+                e = 1 - (1 - k) ** 3
+                x = pc["sx"] + (pc["x"] - pc["sx"]) * e
+                y = pc["sy"] + (pc["y"] - pc["sy"]) * e
+                a = S.clamp(k * 4)
+                if a <= 0.01:
+                    continue
+                im = pc["img"].rotate(pc["spin0"] * (1 - e), expand=True, resample=Image.BICUBIC)
+                if a < 0.99:
+                    im.putalpha(im.getchannel("A").point(lambda v: int(v * a)))
+                img.paste(im, (int(x - im.width / 2), int(y - im.height / 2)), im)
+            return
+        # 2) 합쳐지는 순간: 살짝 커졌다 제 크기로 + 화면 흔들림
+        k = S.clamp((t - self.ASSEMBLE) / 0.25)
+        pop_scale = 1 + 0.08 * (1 - k)
+        shake = 0.0
+        if t < self.ASSEMBLE + 0.3:
+            q = (t - self.ASSEMBLE) / 0.3
+            shake = 10 * s * (1 - q) * math.sin(q * math.pi * 7)
+        # 3) 로고가 위로 올라가며 작아짐
+        lk = S.ease_in_out((t - self.LIFT0) / (self.LIFT1 - self.LIFT0))
+        scale = pop_scale * (1 - 0.42 * lk)
+        cy = L.cy + (190 * s - L.cy) * lk
+        f = font("serif_bold", self.size * scale)
+        for sy in self.syl:
+            x = L.cx + (sy["x"] - L.cx) * scale + shake
+            draw_text(img, (x, cy + shake * 0.4), sy["ch"], f, sy["col"])
+        u = S.ease_out((t - self.ASSEMBLE - 0.1) / 0.35)
+        if u > 0:
+            tot = (self.syl[-1]["x"] + self.syl[-1]["w"] / 2 - (self.syl[0]["x"] - self.syl[0]["w"] / 2)) * scale
+            y = cy + self.size * 0.62 * scale
+            dr.line([(L.cx - tot / 2 * u + shake, y), (L.cx + tot / 2 * u + shake, y)],
+                    fill=S.ACCENT, width=max(2, int(7 * s * scale)))
+        # 4) 최종 화면 카드 자리 (유튜브 스튜디오에서 이 위치에 '동영상'·'구독' 요소를 놓으면 딱 맞음)
+        if self.d.get("endscreen", True):
+            a = S.ease_out((t - self.LIFT1 + 0.2) / 0.6)
+            if a > 0:
+                vw, vh = 760 * s, 428 * s
+                vx, vy = L.cx - 160 * s - vw / 2, 640 * s
+                col = S.mix(S.BG_TOP, S.MUTED, 0.55 * a)
+                S.rounded_box(img, (vx - vw / 2, vy - vh / 2, vx + vw / 2, vy + vh / 2), int(10 * s),
+                              S.mix(S.BG_TOP, S.CARD, a), col, width=3)
+                draw_text(img, (vx, vy), "추천 영상", font("sans_bold", 40 * s), S.MUTED, 0.8 * a)
+                cxs, r = L.cx + 450 * s, 140 * s
+                dr.ellipse((cxs - r, vy - r, cxs + r, vy + r), fill=S.mix(S.BG_TOP, S.CARD, a), outline=col,
+                           width=3)
+                draw_text(img, (cxs, vy), "구독", font("sans_bold", 44 * s), S.MUTED, 0.8 * a)
+
+
 TYPES = {
     "hook": Hook, "title": Title, "chapter": Chapter, "chain": Chain, "map": Map,
     "timeline": Timeline, "theories": Theories, "summary": Summary, "sources": Sources,
     "cta": Cta, "tableau": Tableau, "intro": Intro,
     "intro_dismantle": IntroDismantle, "intro_shatter": IntroShatter,
+    "outro": OutroAssemble,
 }

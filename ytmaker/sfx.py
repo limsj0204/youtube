@@ -171,3 +171,9 @@ def intro_shatter(sr, dur, timing):
     mix_at(buf, boom(sr), timing["slam"], sr)
     mix_at(buf, crack(sr), timing["break"], sr)
     return np.clip(buf, -1, 1)
+
+
+def outro_assemble(sr, dur, timing):
+    buf = np.zeros(int(dur * sr), np.float32)
+    mix_at(buf, boom(sr), timing["assemble"], sr)
+    return np.clip(buf, -1, 1)
