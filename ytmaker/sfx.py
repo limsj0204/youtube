@@ -99,5 +99,5 @@ def intro(sr, dur, timing):
     if "open2" in timing:
         mix_at(buf, rustle(sr, 0.3) * 0.8, timing["open2"], sr)
     mix_at(buf, pop(sr, 700), timing["title"], sr)
-    mix_at(buf, whoosh(sr, dur - timing["zoom"]), timing["zoom"], sr)
+    # 줌인 구간은 효과음 없이 (빨려 들어가는 소리는 뺐음)
     return np.clip(buf, -1, 1)
