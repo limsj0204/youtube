@@ -41,9 +41,9 @@ fact_check:
 
 thumbnail:
   big: 김치
-  lines: ['알고 보니 한자어', '김치 = 沈菜(침채)']
+  lines: ['알고 보니 한자어', '사냥 · 성냥 · 짐승도?']
   photo: {file: assets/photos/kimchi_closeup.jpg, focus: [0.62, 0.55]}
-  caption: '사냥 · 성냥 · 짐승도?'
+  caption: 한자어에서 변한 단어들
   badge: 단어해체소
 
 scenes:
