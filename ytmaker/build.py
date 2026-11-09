@@ -227,10 +227,10 @@ def thumbnail(ep, path):
         base = geo.base_map((W, H), proj, set(th.get("highlight", [])))
         base.putalpha(base.getchannel("A").point(lambda v: int(v * 0.55)))
         img.paste(base, (0, 0), base)
-    if th.get("layout") == "equation":
-        _thumb_equation(img, th)
-        img.save(path)
-        return
+    if th.get("bg_text"):
+        # 지도가 없는 편: 핵심 글자를 크고 흐리게 깔아 배경을 채운다
+        fbg = S.font("serif_bold", 460)
+        S.draw_text(img, (th.get("bg_x", 900), 380), th["bg_text"], fbg, S.INK, 0.07)
     # 왼쪽 큰 글자: 두 글자는 세로로 쌓고, 칸(560x620)에 맞게 크기 자동 조절
     big = th.get("big", "")
     S.glow(img, (330, 360), 330, S.ACCENT, 0.55)
@@ -262,62 +262,21 @@ def thumbnail(ep, path):
             A.place(img, "flag:" + code, (fx + i * 150, y + 30), 100)
             if i + 1 < len(th["flags"]):
                 S.draw_arrow(img, (fx + i * 150 + 60, y + 30), 30, S.ACCENT, 46)
+    if th.get("caption"):
+        # 아래쪽 빨간 띠: 궁금증을 남기는 한 줄
+        fc = S.font("sans_bold", 50)
+        while fc.size > 30 and S.text_size(th["caption"], fc)[0] > 560:
+            fc = S.font("sans_bold", fc.size - 2)
+        tw, _ = S.text_size(th["caption"], fc)
+        cy = max(y + 40, 560)
+        S.rounded_box(img, (640, cy - 42, 640 + tw + 48, cy + 42), 12, S.RED)
+        S.draw_text(img, (664, cy), th["caption"], fc, S.INK, anchor="lm")
     if th.get("badge"):
         f = S.font("sans_bold", 36)
         tw, _ = S.text_size(th["badge"], f)
         S.rounded_box(img, (640, 90, 640 + tw + 50, 150), 30, S.RED)
         S.draw_text(img, (665, 120), th["badge"], f, S.INK, anchor="lm")
     img.save(path)
-
-
-def _thumb_equation(img, th):
-    """'A → B' 한 줄로 보여 주는 썸네일.
-    thumbnail:
-      layout: equation
-      headline: '김치도 {한자어}였다'   # {} 안은 빨강
-      left: 沈菜
-      left_sub: 침채
-      right: 김치
-      icon: icon:jar
-      caption: '김치의 ‘김’은 실수에서 나왔다?'
-      badge: 단어해체소
-    """
-    from . import assets as A
-    W, H = img.size
-    # 위: 제목 한 줄 (조각마다 색을 바꿔 이어 그림)
-    parts = re.split(r"(\{[^}]*\})", th.get("headline", ""))
-    segs = [(p[1:-1], S.ACCENT) if p.startswith("{") else (p, S.INK) for p in parts if p]
-    fs = 112
-    while fs > 40 and sum(S.text_size(t, S.font("serif_bold", fs))[0] for t, _ in segs) > W - 120:
-        fs -= 4
-    f = S.font("serif_bold", fs)
-    x = W / 2 - sum(S.text_size(t, f)[0] for t, _ in segs) / 2
-    for t, col in segs:
-        S.draw_text(img, (x, 175), t, f, col, anchor="lm", shadow=True)
-        x += S.text_size(t, f)[0]
-    # 가운데: 왼쪽 → 오른쪽
-    cy = 405
-    fb = S.font("serif_bold", 190)
-    lx, rx = 330, 950
-    S.glow(img, (rx, cy), 300, S.ACCENT, 0.5)
-    S.draw_text(img, (lx, cy), th.get("left", ""), fb, S.MUTED, shadow=True)
-    S.draw_text(img, (rx, cy), th.get("right", ""), fb, S.INK, shadow=True)
-    S.draw_arrow(img, (W / 2 - 80, cy), 160, S.ACCENT, 170)
-    if th.get("left_sub"):
-        S.draw_text(img, (lx, cy + 135), th["left_sub"], S.font("sans_bold", 44), S.MUTED)
-    if th.get("icon"):
-        A.place(img, th["icon"], (rx + 230, cy - 120), 120)
-    # 아래: 궁금증을 남기는 한 줄 (빨간 띠 위)
-    if th.get("caption"):
-        fc = S.font("sans_bold", 54)
-        tw, _ = S.text_size(th["caption"], fc)
-        S.rounded_box(img, (W / 2 - tw / 2 - 36, 590, W / 2 + tw / 2 + 36, 670), 12, S.RED)
-        S.draw_text(img, (W / 2, 630), th["caption"], fc, S.INK)
-    if th.get("badge"):
-        fbd = S.font("sans_bold", 30)
-        tw, _ = S.text_size(th["badge"], fbd)
-        S.rounded_box(img, (40, 34, 40 + tw + 40, 86), 26, S.RED)
-        S.draw_text(img, (60, 60), th["badge"], fbd, S.INK, anchor="lm")
 
 
 def main(argv=None):

@@ -39,12 +39,10 @@ fact_check:
   - 모든 단어를 국립국어원 사전 원문으로 확인함 (research.md). 업로드 전 한 번 더 훑어보기
 
 thumbnail:
-  layout: equation
-  headline: '김치도 {한자어}였다'
-  left: 沈菜
-  left_sub: 침채
-  right: 김치
-  caption: '김치의 ‘김’은 실수에서 나왔다?'
+  big: 김치
+  lines: ['알고 보니 한자어', '沈菜(침채)에서 온 말']
+  bg_text: 沈菜
+  caption: '‘김’은 실수에서 나왔다?'
   badge: 단어해체소
 
 scenes:
