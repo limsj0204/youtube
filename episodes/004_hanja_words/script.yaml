@@ -41,9 +41,9 @@ fact_check:
 
 thumbnail:
   big: 김치
-  lines: ['알고 보니 한자어', '沈菜(침채)에서 온 말']
+  lines: ['알고 보니 한자어', '김치 = 沈菜(침채)']
   photo: {file: assets/photos/kimchi_closeup.jpg, focus: [0.62, 0.55]}
-  caption: '‘김’은 실수에서 나왔다?'
+  caption: '사냥 · 성냥 · 짐승도?'
   badge: 단어해체소
 
 scenes:
