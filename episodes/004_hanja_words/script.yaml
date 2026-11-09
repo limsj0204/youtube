@@ -33,6 +33,7 @@ sources:
 credits:
   - 일러스트 Fluent Emoji (Microsoft, MIT 라이선스)
   - 글꼴 Pretendard (SIL OFL), Noto Sans CJK (SIL OFL)
+  - '썸네일 사진: Nagyman, “Gimchi” (Wikimedia Commons), CC BY-SA 2.0, 잘라 내고 어둡게 조정함. 썸네일도 같은 라이선스(https://creativecommons.org/licenses/by-sa/2.0/)를 따릅니다'
   - 내레이션 ElevenLabs
 
 fact_check:
@@ -41,7 +42,7 @@ fact_check:
 thumbnail:
   big: 김치
   lines: ['알고 보니 한자어', '沈菜(침채)에서 온 말']
-  bg_text: 沈菜
+  photo: {file: assets/photos/kimchi_closeup.jpg, focus: [0.62, 0.55]}
   caption: '‘김’은 실수에서 나왔다?'
   badge: 단어해체소
 

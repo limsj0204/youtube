@@ -227,6 +227,8 @@ def thumbnail(ep, path):
         base = geo.base_map((W, H), proj, set(th.get("highlight", [])))
         base.putalpha(base.getchannel("A").point(lambda v: int(v * 0.55)))
         img.paste(base, (0, 0), base)
+    if th.get("photo"):
+        _thumb_photo(img, th["photo"])
     if th.get("bg_text"):
         # 지도가 없는 편: 핵심 글자를 크고 흐리게 깔아 배경을 채운다
         fbg = S.font("serif_bold", 460)
@@ -277,6 +279,27 @@ def thumbnail(ep, path):
         S.rounded_box(img, (640, 90, 640 + tw + 50, 150), 30, S.RED)
         S.draw_text(img, (665, 120), th["badge"], f, S.INK, anchor="lm")
     img.save(path)
+
+
+def _thumb_photo(img, ph):
+    """왼쪽 큰 글자 뒤에 사진을 어둡게 깔고, 오른쪽 글자 쪽으로 갈수록 사라지게.
+    photo: {file: assets/photos/x.jpg, focus: [0.5, 0.5], width: 780, dim: 0.5}"""
+    from PIL import Image, ImageEnhance
+    W, H = img.size
+    src = Image.open(Path(__file__).resolve().parent.parent / ph["file"]).convert("RGB")
+    pw = int(ph.get("width", 780))
+    fx, fy = ph.get("focus", [0.5, 0.5])
+    k = max(pw / src.width, H / src.height)
+    src = src.resize((int(src.width * k + 0.5), int(src.height * k + 0.5)), Image.LANCZOS)
+    x0 = min(max(int(src.width * fx - pw / 2), 0), src.width - pw)
+    y0 = min(max(int(src.height * fy - H / 2), 0), src.height - H)
+    crop = ImageEnhance.Brightness(src.crop((x0, y0, x0 + pw, y0 + H))).enhance(ph.get("dim", 0.5))
+    fade = int(pw * 0.38)
+    mask = Image.new("L", (pw, H), 255)
+    for x in range(pw - fade, pw):
+        a = int(255 * (pw - x) / fade)
+        mask.paste(a, (x, 0, x + 1, H))
+    img.paste(crop, (0, 0), mask)
 
 
 def main(argv=None):

@@ -1,0 +1,7 @@
+사진 출처 (Wikimedia Commons). 영상·썸네일에 쓸 때는 설명란에 아래 출처를 적는다.
+
+kimchi_closeup.jpg
+  원본: https://commons.wikimedia.org/wiki/File:Gimchi.jpg (1280px 축소본)
+  촬영: Nagyman (Flickr 사용자)
+  라이선스: CC BY-SA 2.0 (https://creativecommons.org/licenses/by-sa/2.0/)
+  썸네일에서는 잘라 내고 어둡게 조정해 씀 → 그 썸네일도 같은 라이선스로 공유됨을 설명란에 밝힌다
