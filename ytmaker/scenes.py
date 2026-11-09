@@ -465,7 +465,13 @@ class Timeline(Scene):
             dr.line([(lx, ya), (lx, ya + (yb - ya) * line_a)], fill=S.CARD_EDGE, width=int(6 * L.s))
             pos = [(lx, ya + (yb - ya) * (i + 0.5) / n) for i in range(n)]
         else:
-            ly = y0 + h * 0.52
+            # 그림(선 위 245px)부터 설명 글(선 아래)까지 한 덩어리로 보고,
+            # 제목 밑줄 아래 ~ 자막 위 사이 공간의 한가운데에 놓는다
+            fl0 = font("sans", 34 * L.s)
+            lines = max(len(S.wrap(e["label"], fl0, w / n - 30)) for e in ev)
+            above, below = 245, 70 + 48 * (lines - 1) + 24
+            area_top, area_bottom = y0 + 95, y0 + h + 30
+            ly = (area_top + area_bottom) / 2 + (above - below) / 2
             xa, xb = x0 + 60, x0 + w - 60
             dr.line([(xa, ly), (xa + (xb - xa) * line_a, ly)], fill=S.CARD_EDGE, width=6)
             pos = [(xa + (xb - xa) * (i + 0.5) / n, ly) for i in range(n)]
