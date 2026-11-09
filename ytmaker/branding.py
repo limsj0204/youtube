@@ -3,7 +3,7 @@
     python3 -m ytmaker.branding
 
 결과: output/branding/
-- profile_a.png, profile_b.png, profile_c.png (800x800, 유튜브가 원으로 잘라 보여줌)
+- profile.png (채널에 쓰는 프사, 시안 B) / profile_a·b·c.png (시안, 800x800, 유튜브가 원으로 잘라 보여줌)
 - banner.png (2560x1440)
 - check_*.png  (원형으로 잘린 모습, 기기별로 보이는 영역 확인용)
 """
@@ -206,6 +206,8 @@ def main():
     profs = [profile_a(), profile_b(), profile_c()]
     for p, k in zip(profs, "abc"):
         p.convert("RGB").save(OUT / f"profile_{k}.png")
+    # 채널에 쓰기로 고른 시안: B (자모로 벌어진 '단')
+    profs[1].convert("RGB").save(OUT / "profile.png")
     circle_check(profs, ["A", "B", "C"]).save(OUT / "check_profile.png")
     b = banner()
     b.convert("RGB").save(OUT / "banner.png")
