@@ -53,15 +53,25 @@ def font(kind, size):
     return f
 
 
+def _old_jamo(ch):
+    """옛한글 조합용 자모 (ᄒ, ᆡ, ᆼ, ㆍ 방점 등). 글자 하나로 조합하려면 한 폰트로 그려야 한다."""
+    o = ord(ch)
+    return 0x1100 <= o <= 0x11FF or 0xA960 <= o <= 0xA97F or 0xD7B0 <= o <= 0xD7FF or o in (0x302E, 0x302F)
+
+
 def _runs(s, fnt):
-    """테마 폰트에 없는 글자는 대체 폰트로: [(글자들, 폰트), ...]"""
+    """테마 폰트에 없는 글자는 대체 폰트로: [(글자들, 폰트), ...]
+    옛한글(조합용 자모)은 테마 폰트가 조합하지 못하므로 대체 폰트로 그린다.
+    '쥬ᇰ'처럼 완성형 뒤에 받침 자모가 붙으면 앞 글자도 같은 폰트로 묶는다."""
     cmap = getattr(fnt, "_cmap", None)
     fb = getattr(fnt, "_fallback", None)
-    if not cmap or fb is None or all(ord(ch) in cmap or ch == " " for ch in s):
+    if not cmap or fb is None or all((ord(ch) in cmap and not _old_jamo(ch)) or ch == " " for ch in s):
         return [(s, fnt)]
     runs = []
-    for ch in s:
-        f = fnt if (ord(ch) in cmap or ch == " ") else fb
+    for i, ch in enumerate(s):
+        nxt_jamo = i + 1 < len(s) and _old_jamo(s[i + 1]) and 0x1160 <= ord(s[i + 1]) <= 0x11FF
+        own = (ord(ch) in cmap and not _old_jamo(ch) and not nxt_jamo) or ch == " "
+        f = fnt if own else fb
         if runs and runs[-1][1] is f:
             runs[-1] = (runs[-1][0] + ch, f)
         else:
