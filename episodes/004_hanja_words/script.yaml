@@ -1,13 +1,13 @@
-# 단어해체소: 김치도 한자어였다 (알고 보니 한자였던 우리말)
+# 단어해체소: 한자어에서 변한 단어들 (김치, 사냥, 성냥, 짐승 …)
 #
 # 근거 자료: research.md (국립국어원 우리말어휘역사사전 중심, 모든 항목 원문 확인)
 # 원칙: 사전이 말한 것까지만. 해석은 "~로 봅니다", "~인 셈이죠"로 드러낸다.
 # 옛한글(ᄒᆡᆼ, ᄎᆡ 등)은 화면(sub, 카드)에만 쓰고, 낭독(say)에는 현대 발음으로 적는다.
 
 series: 단어해체소
-title: 김치도 한자어였다
+title: 한자어에서 변한 단어들
 description: |
-  김치, 사냥, 성냥, 배추, 그리고 짐승까지. 순우리말처럼 들리지만 알고 보면 한자에서 온 말들입니다.
+  김치, 사냥, 성냥, 그리고 짐승. 순우리말처럼 들리지만, 모두 한자어에서 변해 온 말입니다.
   국립국어원 우리말어휘역사사전을 따라, 이 말들이 수백 년 동안 어떻게 소리가 닳고 바뀌어 지금의 모습이 되었는지 해체해 봅니다.
   김치의 '김'이 사실은 실수를 바로잡으려다 생긴 소리라는 이야기도 담았습니다.
   어원은 설이 여러 개인 경우가 많습니다. 틀린 부분이 있다면 댓글로 알려주세요.
@@ -47,17 +47,30 @@ thumbnail:
   badge: 단어해체소
 
 scenes:
-  - type: hook
-    word: 김치
-    icon: icon:jar
-    icon_at: 0.3
-    reveal: 沈菜(침채)
-    reveal_at: 1
+  - type: tableau
+    layers:
+      - {img: 'custom:kimchi', x: 0.14, y: 0.3, size: 190, at: 0, motion: float}
+      - {img: 'icon:bow_and_arrow', x: 0.38, y: 0.3, size: 170, at: 0.2, motion: float}
+      - {img: 'icon:fire', x: 0.62, y: 0.3, size: 170, at: 0.4, motion: float}
+      - {img: 'icon:paw_prints', x: 0.86, y: 0.3, size: 170, at: 0.6, motion: float}
+    texts:
+      - {text: 김치, x: 0.14, y: 0.56, size: 120, at: 0, font: serif_bold}
+      - {text: 사냥, x: 0.38, y: 0.56, size: 120, at: 0.2, font: serif_bold}
+      - {text: 성냥, x: 0.62, y: 0.56, size: 120, at: 0.4, font: serif_bold}
+      - {text: 짐승, x: 0.86, y: 0.56, size: 120, at: 0.6, font: serif_bold}
+      - {text: 沈菜, x: 0.14, y: 0.75, size: 64, at: 1.1, color: accent, font: serif_bold}
+      - {text: 山行, x: 0.38, y: 0.75, size: 64, at: 1.3, color: accent, font: serif_bold}
+      - {text: 石硫黃, x: 0.62, y: 0.75, size: 64, at: 1.5, color: accent, font: serif_bold}
+      - {text: 衆生, x: 0.86, y: 0.75, size: 64, at: 1.7, color: accent, font: serif_bold}
+      - {text: 침채, x: 0.14, y: 0.84, size: 36, at: 1.1, color: muted}
+      - {text: 산행, x: 0.38, y: 0.84, size: 36, at: 1.3, color: muted}
+      - {text: 석유황, x: 0.62, y: 0.84, size: 36, at: 1.5, color: muted}
+      - {text: 중생, x: 0.86, y: 0.84, size: 36, at: 1.7, color: muted}
     say:
-      - 우리 밥상에 빠지지 않는 김치.
-      - say: 그런데 이 김치, 순우리말이 아니라 한자어 침채에서 온 말이라는 거 알고 계셨나요?
-        sub: 그런데 이 김치, 순우리말이 아니라 한자어 ‘침채(沈菜)’에서 온 말이라는 거 알고 계셨나요?
-      - 김치뿐 아니라 사냥, 성냥, 배추, 그리고 짐승까지. 오늘은 순우리말처럼 들리지만, 한자에서 온 말들을 해체해 봅니다.
+      - 김치, 사냥, 성냥, 그리고 짐승. 모두 순우리말처럼 들리는 말들이죠.
+      - say: 그런데 이 말들은 모두 한자어에서 변해 온 말입니다. 김치는 침채, 사냥은 산행, 성냥은 석유황, 짐승은 중생에서 왔습니다.
+        sub: 그런데 이 말들은 모두 한자어에서 변해 온 말입니다. 김치는 ‘침채(沈菜)’, 사냥은 ‘산행(山行)’, 성냥은 ‘석유황(石硫黃)’, 짐승은 ‘중생(衆生)’에서 왔습니다.
+      - 오늘은 한자어가 어떻게 지금의 우리말로 변해 왔는지, 하나씩 해체해 봅니다.
 
   - type: intro_shatter
     name: 단어해체소
@@ -65,8 +78,8 @@ scenes:
     hold: 2.6
 
   - type: title
-    title: "김치도\n한자어였다"
-    subtitle: 알고 보니 한자였던 우리말
+    title: "한자어에서\n변한 단어들"
+    subtitle: 김치, 사냥, 성냥, 그리고 짐승
     hold: 3.4
 
   # ================================================================ 1. 단어의 족보
@@ -231,14 +244,14 @@ scenes:
     chapter: 우리가 만든 한자어
     num: 5
     title: 우리가 만든 한자어
-    icon: icon:jar
+    icon: custom:kimchi
     subtitle: 김치와 썰매
     say:
-      - 이제 오늘의 주인공, 김치입니다.
+      - 한자어라고 모두 중국에서 건너온 건 아닙니다. 중국에는 없는, 우리나라에서 직접 만든 한자어도 있죠. 김치와 썰매가 그렇습니다.
 
   - type: chain
     title: '‘김치’의 족보'
-    icon: icon:jar
+    icon: custom:kimchi
     steps:
       - {lang: 한자어, word: 沈菜, reading: 침채}
       - {lang: 16세기, word: 딤ᄎᆡ, reading: 옛 한자음}
@@ -327,7 +340,7 @@ scenes:
     chapter: 정리
     title: 오늘 해체한 단어
     rows:
-      - {word: 김치, icon: icon:jar, path: '沈菜 → 딤ᄎᆡ → 짐ᄎᆡ → 김치', at: 0}
+      - {word: 김치, icon: custom:kimchi, path: '沈菜 → 딤ᄎᆡ → 짐ᄎᆡ → 김치', at: 0}
       - {word: 사냥, icon: icon:bow_and_arrow, path: '山行 → 산영 → 사냥', at: 0}
       - {word: 성냥, icon: icon:fire, path: '石硫黃 → 셕냥 → 성냥', at: 0}
       - {word: 배추, icon: icon:leafy_green, path: '白菜 (중국 발음) → 배추', at: 0}
@@ -358,7 +371,7 @@ shorts:
   scenes:
     - type: hook
       word: 김치
-      icon: icon:jar
+      icon: custom:kimchi
       icon_at: 0.2
       reveal: 沈菜(침채)
       reveal_at: 0.4
