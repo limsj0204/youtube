@@ -18,6 +18,8 @@ voice:
 voice_fx: soft
 bgm:
   file: bgm/bgm.mp3
+  title: 치즈조각            # 브금대통령 1185번 곡 (설명란 출처 표기용)
+  url: https://youtu.be/oViOPO72QF8
   volume_db: -22
   fade_out: 3
 speed: 0.95
@@ -34,7 +36,6 @@ credits:
   - 지도 Natural Earth (퍼블릭 도메인)
   - 글꼴 Pretendard (SIL OFL)
   - 내레이션 ElevenLabs
-  - '배경음악: 브금대통령 (https://www.youtube.com/watch?v=oViOPO72QF8)'
 
 fact_check:
   - 위키백과로만 확인한 내용(시카이로 이야기, 이름 유래 세 가지 설과 반론, 한국 짬뽕의 변화)은 가능하면 원 문헌으로 한 번 더 확인

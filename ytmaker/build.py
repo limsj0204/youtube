@@ -207,6 +207,11 @@ def description(ep, timeline):
     lines += ["", "📚 참고 자료"] + [f"- {s}" for s in ep.get("sources", [])]
     if ep.get("credits"):
         lines += ["", "🎨 사용한 자료"] + [f"- {c}" for c in ep["credits"]]
+    bgm = ep.get("bgm") or {}
+    if bgm.get("title"):
+        # 브금대통령 이용 조건: 설명란에 출처 표기
+        lines += ["", f"🎵 Music provided by {bgm.get('by', '브금대통령')}",
+                  f"🎵 Track : {bgm['title']} - {bgm['url']}"]
     if ep.get("tags"):
         lines += ["", " ".join("#" + t for t in ep["tags"])]
     return "\n".join(lines) + "\n"

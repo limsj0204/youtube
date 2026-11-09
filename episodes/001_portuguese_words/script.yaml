@@ -23,6 +23,8 @@ voice:                      # 내레이션 목소리 (ElevenLabs, 한국어 여�
 voice_fx: soft              # 목소리 보정 (날카로움 줄이기)
 bgm:                        # 배경음악 (브금대통령, 파일은 저장소에 올리지 않음: episodes/<에피소드>/bgm/)
   file: bgm/bgm.mp3
+  title: 치즈조각            # 브금대통령 1185번 곡 (설명란 출처 표기용)
+  url: https://youtu.be/oViOPO72QF8
   volume_db: -22            # 목소리보다 충분히 작게. 말할 때는 자동으로 더 작아짐
   fade_out: 3
 speed: 0.95   # 말하기 속도 (1.0 = 기본)
@@ -40,7 +42,6 @@ credits:
   - 지도 Natural Earth (퍼블릭 도메인)
   - 글꼴 Pretendard (SIL OFL)
   - 내레이션 ElevenLabs
-  - '배경음악: 브금대통령 (https://www.youtube.com/watch?v=oViOPO72QF8)'
 
 fact_check:   # 업로드 전 확인 목록 (research.md 참고)
   - 위키백과로만 확인한 내용(카스텔라 옛 문헌 기록, tabaco 기원 두 설)은 가능하면 원 문헌으로 한 번 더 확인
