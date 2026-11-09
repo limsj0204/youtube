@@ -51,7 +51,7 @@ scenes:
     layers:
       - {img: 'custom:kimchi', x: 0.14, y: 0.3, size: 190, at: 0, motion: float}
       - {img: 'icon:bow_and_arrow', x: 0.38, y: 0.3, size: 170, at: 0.2, motion: float}
-      - {img: 'icon:fire', x: 0.62, y: 0.3, size: 170, at: 0.4, motion: float}
+      - {img: 'custom:match', x: 0.62, y: 0.3, size: 170, at: 0.4, motion: float}
       - {img: 'icon:paw_prints', x: 0.86, y: 0.3, size: 170, at: 0.6, motion: float}
     texts:
       - {text: 김치, x: 0.14, y: 0.56, size: 120, at: 0, font: serif_bold}
@@ -117,14 +117,14 @@ scenes:
     chapter: 소리가 닳은 말
     num: 2
     title: 소리가 닳은 말
-    icon: icon:fire
+    icon: custom:match
     subtitle: 성냥과 숭늉
     say:
       - 사냥처럼, 오랜 세월 소리가 닳아서 한자의 모습을 잃어버린 말들이 있습니다.
 
   - type: chain
     title: '‘성냥’의 족보'
-    icon: icon:fire
+    icon: custom:match
     steps:
       - {lang: 한자어, word: 石硫黃, reading: '석유황 (= 유황)'}
       - {lang: 17~19세기, word: 셕뉴황, reading: 약재 이름}
@@ -342,7 +342,7 @@ scenes:
     rows:
       - {word: 김치, icon: custom:kimchi, path: '沈菜 → 딤ᄎᆡ → 짐ᄎᆡ → 김치', at: 0}
       - {word: 사냥, icon: icon:bow_and_arrow, path: '山行 → 산영 → 사냥', at: 0}
-      - {word: 성냥, icon: icon:fire, path: '石硫黃 → 셕냥 → 성냥', at: 0}
+      - {word: 성냥, icon: custom:match, path: '石硫黃 → 셕냥 → 성냥', at: 0}
       - {word: 배추, icon: icon:leafy_green, path: '白菜 (중국 발음) → 배추', at: 0}
       - {word: 썰매, icon: icon:sled, path: '雪馬 → 썰매', at: 0}
       - {word: 짐승, icon: icon:paw_prints, path: '衆生 → 짐승', at: 0}

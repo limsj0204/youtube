@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <!-- 성냥: 성냥갑 위에 성냥개비 두 개, 그중 하나는 불이 붙어 있음 -->
+  <!-- 성냥갑 -->
+  <path d="M40 176 L156 140 L220 168 L104 206 Z" fill="#C9312A"/>
+  <path d="M40 176 L104 206 L104 228 L40 198 Z" fill="#A3241F"/>
+  <path d="M104 206 L220 168 L220 190 L104 228 Z" fill="#7E1B17"/>
+  <path d="M60 176 L150 148 L196 168 L106 198 Z" fill="#F2E3C4"/>
+  <path d="M106 210 L216 174 L216 182 L106 218 Z" fill="#5A3A2A"/>
+  <!-- 갑 위 무늬 (별) -->
+  <path d="M128 164 l5 -10 l5 10 l11 1 l-8 7 l3 11 l-11 -6 l-11 6 l3 -11 l-8 -7 Z" fill="#C9312A" opacity="0.9"/>
+
+  <!-- 성냥개비 1 (불 안 붙음, 뒤) -->
+  <path d="M70 150 L176 82" stroke="#E2B97A" stroke-width="10" stroke-linecap="round"/>
+  <path d="M70 150 L176 82" stroke="#C99A55" stroke-width="3" stroke-linecap="round" opacity="0.5" transform="translate(2 3)"/>
+  <ellipse cx="180" cy="79" rx="12" ry="10" transform="rotate(-33 180 79)" fill="#B3261E"/>
+  <ellipse cx="177" cy="76" rx="5" ry="3.5" transform="rotate(-33 177 76)" fill="#E25248"/>
+
+  <!-- 성냥개비 2 (불 붙음, 앞) -->
+  <path d="M96 168 L148 64" stroke="#EBC488" stroke-width="10" stroke-linecap="round"/>
+  <path d="M96 168 L148 64" stroke="#C99A55" stroke-width="3" stroke-linecap="round" opacity="0.5" transform="translate(3 1)"/>
+  <ellipse cx="150" cy="60" rx="12" ry="10" transform="rotate(-63 150 60)" fill="#3A2A22"/>
+  <!-- 불꽃 -->
+  <path d="M152 58 C132 50 128 26 140 8 C142 22 150 24 154 18 C158 30 172 34 170 48 C168 58 160 62 152 58 Z" fill="#FF6B1A"/>
+  <path d="M152 56 C140 50 140 36 146 26 C148 34 154 36 156 32 C160 40 166 44 164 50 C162 56 158 58 152 56 Z" fill="#FFB02E"/>
+  <path d="M152 54 C146 50 147 43 150 39 C152 43 155 44 157 42 C159 46 159 50 157 52 C156 54 154 55 152 54 Z" fill="#FFE27A"/>
+</svg>
