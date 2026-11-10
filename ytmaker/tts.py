@@ -69,8 +69,14 @@ def clean(text):
     return re.sub(r"\s+", " ", text).strip()
 
 
-def _key(text, speed, ctx=("", "")):
-    sig = json.dumps(VOICE, sort_keys=True, ensure_ascii=False)
+# 소리를 만드는 설정이 아니라 보내기 전 글자 처리 옵션이라, 저장 이름(키)에 넣지 않는다.
+# (넣으면 옵션을 켜는 순간 모든 문장의 키가 바뀌어 전부 새로 만들게 된다. 실제로 바뀐 문장은 text가 달라져 새 키가 됨)
+_KEY_IGNORE = ("split_e",)
+
+
+def _key(text, speed, ctx=("", ""), legacy=False):
+    voice = VOICE if legacy else {k: v for k, v in VOICE.items() if k not in _KEY_IGNORE}
+    sig = json.dumps(voice, sort_keys=True, ensure_ascii=False)
     extra = f"|{ctx[0]}|{ctx[1]}" if any(ctx) else ""
     return hashlib.sha1(f"{sig}|{speed}|{SAMPLE_RATE}|{text}{extra}".encode()).hexdigest()[:16]
 
@@ -126,6 +132,8 @@ def synthesize(text, speed=1.0, prev="", nxt=""):
         USAGE["cached"] += 1
         return np.load(path), SAMPLE_RATE
     stored = _store_load(key)
+    if stored is None and any(k in VOICE for k in _KEY_IGNORE):
+        stored = _store_load(_key(text, speed, ctx, legacy=True))   # 예전 방식 키로 저장된 음성
     if stored is not None:
         USAGE["cached"] += 1
         np.save(path, stored)
