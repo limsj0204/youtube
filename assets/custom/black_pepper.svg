@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="20 40 216 216">
+  <!-- 후추: 작은 나무 그릇에 수북이 담긴 통후추, 앞에 몇 알 흩어짐 -->
+  <ellipse cx="128" cy="228" rx="88" ry="10" fill="#000000" opacity="0.2"/>
+  <!-- 그릇 -->
+  <path d="M44 150 Q48 222 128 224 Q208 222 212 150 Z" fill="#A86A3D"/>
+  <path d="M212 150 Q208 222 128 224 Q182 214 190 150 Z" fill="#8A5530"/>
+  <path d="M56 168 Q128 182 200 168" stroke="#8A5530" stroke-width="4" fill="none" opacity="0.6"/>
+  <ellipse cx="128" cy="150" rx="84" ry="16" fill="#C4834F"/>
+  <!-- 수북한 통후추 -->
+  <g>
+    <circle cx="72" cy="146" r="12" fill="#3B2A22"/><circle cx="96" cy="140" r="12" fill="#2E211B"/>
+    <circle cx="122" cy="138" r="12" fill="#3B2A22"/><circle cx="148" cy="140" r="12" fill="#2E211B"/>
+    <circle cx="174" cy="144" r="12" fill="#3B2A22"/><circle cx="84" cy="124" r="12" fill="#2E211B"/>
+    <circle cx="110" cy="118" r="12" fill="#45322A"/><circle cx="136" cy="116" r="12" fill="#2E211B"/>
+    <circle cx="162" cy="122" r="12" fill="#45322A"/><circle cx="98" cy="98" r="12" fill="#3B2A22"/>
+    <circle cx="124" cy="94" r="12" fill="#2E211B"/><circle cx="150" cy="100" r="12" fill="#3B2A22"/>
+    <circle cx="112" cy="74" r="12" fill="#45322A"/><circle cx="138" cy="76" r="12" fill="#2E211B"/>
+  </g>
+  <!-- 알갱이 결과 반짝임 -->
+  <g fill="#7A5A48" opacity="0.9">
+    <circle cx="68" cy="142" r="3.5"/><circle cx="92" cy="136" r="3.5"/><circle cx="118" cy="134" r="3.5"/>
+    <circle cx="144" cy="136" r="3.5"/><circle cx="170" cy="140" r="3.5"/><circle cx="80" cy="120" r="3.5"/>
+    <circle cx="106" cy="114" r="3.5"/><circle cx="132" cy="112" r="3.5"/><circle cx="158" cy="118" r="3.5"/>
+    <circle cx="94" cy="94" r="3.5"/><circle cx="120" cy="90" r="3.5"/><circle cx="146" cy="96" r="3.5"/>
+    <circle cx="108" cy="70" r="3.5"/><circle cx="134" cy="72" r="3.5"/>
+  </g>
+  <g stroke="#1E1511" stroke-width="1.6" fill="none" opacity="0.55">
+    <path d="M66 150 q6 -4 12 0"/><path d="M116 142 q6 -4 12 0"/><path d="M168 148 q6 -4 12 0"/>
+    <path d="M104 122 q6 -4 12 0"/><path d="M156 126 q6 -4 12 0"/><path d="M118 98 q6 -4 12 0"/>
+  </g>
+  <!-- 흩어진 알 -->
+  <circle cx="206" cy="210" r="9" fill="#3B2A22"/><circle cx="203" cy="207" r="2.6" fill="#7A5A48"/>
+  <circle cx="226" cy="198" r="8" fill="#2E211B"/><circle cx="223" cy="195" r="2.4" fill="#7A5A48"/>
+  <circle cx="40" cy="206" r="8" fill="#3B2A22"/><circle cx="37" cy="203" r="2.4" fill="#7A5A48"/>
+</svg>
