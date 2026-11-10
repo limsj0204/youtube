@@ -132,7 +132,8 @@ scenes:
     icon: icon:camera
     subtitle: 사진 없는 글은 지운다
     say:
-      - 답은 천구백구십구 년에 문을 연, 한 인터넷 사이트에 있습니다.
+      - say: 답은 천구백구십구 년에 문을 연, 한 인터넷 사이트에 있습니다.
+        sub: 답은 1999년에 문을 연, 한 인터넷 사이트에 있습니다.
 
   - type: tableau
     title: '디시 = Digital Camera'

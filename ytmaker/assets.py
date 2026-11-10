@@ -5,7 +5,7 @@
     flag:pt          → assets/flags/pt.svg         (flag-icons, MIT)
     custom:carrack   → assets/custom/carrack.svg   (이 저장소에서 직접 그림)
     photo:a.jpg      → assets/photos/a.jpg         (실제 사진: 둥근 모서리 + 흰 테두리, 출처는 SOURCE.txt)
-    logo:dcinside    → assets/photos/dcinside.svg  (로고: 흰 판 위에 올림, 출처는 SOURCE.txt)
+    logo:dcinside    → assets/photos/dcinside.svg 또는 .png  (로고: 흰 판 위에 올림, 출처는 SOURCE.txt)
     episodes/.../img/scene1.png                   → 그 밖의 경로는 파일 그대로 (AI 이미지 등)
 """
 import io
@@ -27,7 +27,8 @@ def resolve(name):
         if kind == "photo":
             return ROOT / "assets/photos" / key
         if kind == "logo":
-            return ROOT / "assets/photos" / f"{key}.svg"
+            svg = ROOT / "assets/photos" / f"{key}.svg"
+            return svg if svg.exists() else ROOT / "assets/photos" / f"{key}.png"
     return ROOT / name
 
 
@@ -72,7 +73,8 @@ def _photo_style(im):
 def _logo_style(im):
     """로고: 원래 색이 어두운 배경에 묻히지 않게 흰 판 위에 올린다."""
     w, h = im.size
-    px, py = int(w * 0.08), int(h * 0.22)
+    py = int(max(h * 0.45, w * 0.04))
+    px = int(py * 1.4)
     out = Image.new("RGBA", (w + px * 2, h + py * 2), (0, 0, 0, 0))
     ImageDraw.Draw(out).rounded_rectangle((0, 0, out.width - 1, out.height - 1),
                                           int(min(out.size) * 0.18), fill=(250, 250, 250, 255))

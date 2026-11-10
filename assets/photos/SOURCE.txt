@@ -5,3 +5,14 @@ kimchi_closeup.jpg
   촬영: Nagyman (Flickr 사용자)
   라이선스: CC BY-SA 2.0 (https://creativecommons.org/licenses/by-sa/2.0/)
   썸네일에서는 잘라 내고 어둡게 조정해 씀 → 그 썸네일도 같은 라이선스로 공유됨을 설명란에 밝힌다
+
+sony_mavica_fd71.jpg  (6편 '짤' 2장)
+  원본: https://commons.wikimedia.org/wiki/File:Sony_FD-71_-_My_First_Digital_Camera.jpg (960px 축소본)
+  촬영: David Wright
+  라이선스: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
+  플로피디스크에 저장하는 소니 디지털카메라 MVC-FD71. 영상에 쓸 때 화면과 설명란에 촬영자·라이선스를 적는다
+
+dcinside.png  (6편 '짤' 2장)
+  원본: https://commons.wikimedia.org/wiki/File:Dcinside.com_logo.svg (960px PNG 축소본)
+  라이선스: 퍼블릭 도메인 (Commons 표기, 단순한 글자 로고), 등록 상표
+  디시인사이드를 가리키는 용도로만 쓴다
