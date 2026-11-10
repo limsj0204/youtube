@@ -27,8 +27,8 @@
 - 정확히 누가 처음 썼는지는 자료가 없다는 점을 밝힘
 
 ## 화면
-- 그림: 액자 속 사진(Fluent 'Framed picture'), 카메라(Fluent 'Camera'), 휴지통(Fluent 'Wastebasket'), '사진 없음' 신고 딱지는 직접 그림
-- 디시인사이드 로고·화면 캡처는 쓰지 않음
+- 그림: 액자 속 사진·카메라·휴지통·필름(Fluent), 글만 있는 게시글과 사진 붙인 게시글은 직접 그림(custom:post_text_only, post_with_photo)
+- 실제 이미지: 디시인사이드 로고(Wikimedia Commons, 퍼블릭 도메인·상표, 사이트를 가리키는 용도로만), 1998년 무렵 디지털카메라 사진(Sony FD-71, David Wright, CC BY 2.0). 화면 캡처는 쓰지 않음
 - 연표: 1999 개설 → 2000 법인 → 2002 후반 짤방 → 2016 신문 용례
 
 ## 썸네일

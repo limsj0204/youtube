@@ -1,0 +1,336 @@
+# 단어해체소: '짤'은 무엇을 막았을까 (짤, 짤방, 잘림 방지)
+#
+# 근거 자료: research.md (우리말샘·표준국어대사전 ✅, 위키백과 '디시인사이드'·'짤방' ⚠️)
+# 원칙: 사전이 말한 것까지만 단정. 위키백과(⚠️)에서 온 사이트 이야기는 "~다고 합니다"로.
+# 디시인사이드에 대한 평가는 다루지 않고, 이름과 당시 규칙만.
+# '잘라 낸 사진이라서 짤?'은 시청자가 떠올릴 질문으로만 쓰고 '설'로 다루지 않는다 (근거 있는 경쟁 설 없음).
+
+series: 단어해체소
+title: '‘짤’은 무엇을 막았을까'
+description: |
+  매일 주고받는 '짤'. 사진을 잘라 내서 짤일까요?
+  사실 짤은 '잘림 방지'를 줄인 '짤방'에서 나온 말입니다.
+  1999년 한 디지털카메라 사이트의 규칙, "사진 없는 글은 지운다"에서 시작된 이야기를 해체해 봅니다.
+  틀린 부분이 있다면 댓글로 알려주세요.
+theme: magazine_dark
+voice:
+  engine: elevenlabs
+  name: CYbONFCmQ856BE6N5Cqt
+  model: eleven_multilingual_v2
+  split_e: true           # '사진에'를 '사재'처럼 합쳐 읽지 않게 '에' 앞을 띄움
+voice_fx: soft
+bgm:
+  file: bgm/bgm.mp3
+  title: 치즈조각            # 브금대통령 1185번 곡 (설명란 출처 표기용)
+  url: https://youtu.be/oViOPO72QF8
+  volume_db: -22
+  fade_out: 3
+speed: 0.95
+tags: [어원, 단어의유래, 짤, 짤방, 움짤, 인터넷용어, 신조어, 우리말, 국어, 상식]
+
+sources:
+  - 국립국어원 우리말샘 '짤', '짤방' 항목 (opendict.korean.go.kr)
+  - 국립국어원 표준국어대사전 '짤리다', '갤러리' 항목 (stdict.korean.go.kr)
+  - 한국어 위키백과 '디시인사이드', '짤방' 문서
+
+credits:
+  - '카메라 사진: "Sony FD-71 - My First Digital Camera" David Wright, CC BY 2.0 (Wikimedia Commons) https://commons.wikimedia.org/wiki/File:Sony_FD-71_-_My_First_Digital_Camera.jpg'
+  - 디시인사이드 로고 (Wikimedia Commons, 퍼블릭 도메인 · 등록 상표, 사이트를 가리키는 용도로만 씀)
+  - 일러스트 Fluent Emoji (Microsoft, MIT 라이선스), 게시글 그림은 직접 그림
+  - 글꼴 Pretendard (SIL OFL)
+  - 내레이션 ElevenLabs
+
+fact_check:
+  - 디시인사이드 개설일(1999년 10월 6일)과 첫 이름 'Digital Camera Inside'는 위키백과 기준
+  - "'사진 없음' 신고 사유, 2002년 후반 짤방 시작은 위키백과 기준 (영상에서는 '~다고 합니다')"
+
+thumbnail:
+  big: 짤
+  lines: ['잘라 낸 사진?', '아니, ‘잘림 방지’']
+  bg_text: 防
+  caption: 디시인사이드에서 태어난 말
+  badge: 단어해체소
+
+scenes:
+  - type: tableau
+    layers:
+      - {img: 'icon:framed_picture', x: 0.2, y: 0.42, size: 210, at: 0, motion: float}
+      - {img: 'icon:film_frames', x: 0.5, y: 0.42, size: 210, at: 0.3, motion: float}
+      - {img: 'icon:face_with_tears_of_joy', x: 0.8, y: 0.42, size: 210, at: 0.6, motion: float}
+    texts:
+      - {text: 짤, x: 0.2, y: 0.72, size: 96, at: 0, font: serif_bold}
+      - {text: 움짤, x: 0.5, y: 0.72, size: 96, at: 0.3, font: serif_bold}
+      - {text: 웃짤, x: 0.8, y: 0.72, size: 96, at: 0.6, font: serif_bold}
+      - {text: '사진을 잘라 내서 ‘짤’?', x: 0.5, y: 0.9, size: 46, at: 1, color: accent, font: serif_bold}
+    say:
+      - 짤, 움짤, 웃짤. 매일같이 주고받는 말이죠.
+      - 그런데 짤은 왜 짤일까요? 사진을 잘라 내서 짤일까요?
+      - 사실 짤은, 무언가가 잘리는 걸 막으려고 붙이던 사진에서 나온 말입니다. 오늘은 짤을 해체해 봅니다.
+
+  - type: intro_shatter
+    name: 단어해체소
+    accent_from: 2
+    hold: 2.6
+
+  - type: title
+    title: "‘짤’은 무엇을\n막았을까"
+    subtitle: 짤, 짤방, 그리고 잘림 방지
+    hold: 3.4
+
+  # ================================================================ 1. 사전 속 짤
+  - type: chapter
+    chapter: 사전 속 짤
+    num: 1
+    title: 사전 속 짤
+    icon: icon:open_book
+    subtitle: 짤은 짤방에서
+    say:
+      - 먼저 사전부터 찾아보겠습니다.
+
+  - type: chain
+    title: '‘짤’의 족보'
+    icon: icon:framed_picture
+    steps:
+      - {lang: 뜻, word: 잘림 방지}
+      - {lang: 줄여서, word: 짤방}
+      - {lang: 더 줄여서, word: 짤}
+    reveal: [1, 0, 0]
+    note: '우리말샘: ‘짤’은 ‘짤방’에서 비롯된 말'
+    note_at: 0
+    say:
+      - say: 국립국어원이 운영하는 온라인 사전, 우리말샘을 보면, 짤은 짤방에서 비롯된 말이라고 나옵니다.
+        sub: 국립국어원이 운영하는 온라인 사전, 우리말샘을 보면, ‘짤’은 ‘짤방’에서 비롯된 말이라고 나옵니다.
+      - say: 그리고 짤방은, 잘림 방지라는 뜻이라고 하죠.
+        sub: 그리고 ‘짤방’은, ‘잘림 방지’라는 뜻이라고 하죠.
+
+  - type: theories
+    title: '반은 우리말, 반은 한자'
+    cards:
+      - label: '우리말샘 ‘짤방’의 원어'
+        head: '짤 + 防'
+        body: "짤: 고유어\n防: 막을 방 (한자)"
+        at: 0
+      - label: 표준국어대사전
+        head: '표준어는 ‘잘리다’'
+        body: "‘짤리다’는\n표준어가 아니다"
+        at: 2
+    say:
+      - say: 우리말샘에는 짤방의 원어도 적혀 있습니다. 짤은 고유어, 방은 막을 방 자. 반은 우리말, 반은 한자로 된 말이죠.
+        sub: 우리말샘에는 ‘짤방’의 원어도 적혀 있습니다. ‘짤’은 고유어, ‘방’은 ‘막을 방(防)’ 자. 반은 우리말, 반은 한자로 된 말이죠.
+      - say: 여기서 짤은, 잘리다를 세게 발음한 짤리다의 짤이라는 거죠.
+        sub: 여기서 ‘짤’은, ‘잘리다’를 세게 발음한 ‘짤리다’의 ‘짤’이라는 거죠.
+      - say: 그런데 표준국어대사전을 보면, 짤리다는 표준어가 아니고 잘리다가 표준어입니다.
+        sub: 그런데 표준국어대사전을 보면, ‘짤리다’는 표준어가 아니고 ‘잘리다’가 표준어입니다.
+      - 짤은 태어날 때부터, 표준어가 아닌 발음에서 나온 말인 셈이죠.
+      - 그렇다면 짤방은, 대체 무엇이 잘리는 걸 막았던 걸까요?
+
+  # ================================================================ 2. 디지털카메라 사이트의 규칙
+  - type: chapter
+    chapter: 디지털카메라 사이트의 규칙
+    num: 2
+    title: 디지털카메라 사이트의 규칙
+    icon: icon:camera
+    subtitle: 사진 없는 글은 지운다
+    say:
+      - 답은 천구백구십구 년에 문을 연, 한 인터넷 사이트에 있습니다.
+
+  - type: tableau
+    title: '디시 = Digital Camera'
+    layers:
+      - {img: 'photo:sony_mavica_fd71.jpg', x: 0.27, y: 0.42, size: 470, at: 2, motion: pop,
+         credit: '사진 David Wright, CC BY 2.0 (Wikimedia Commons)',
+         short: {x: 0.5, y: 0.62, size: 420}}
+      - {img: 'logo:dcinside', x: 0.72, y: 0.3, size: 470, at: 0, motion: pop,
+         short: {x: 0.5, y: 0.12, size: 420}}
+    texts:
+      - {text: 'Digital Camera Inside', x: 0.72, y: 0.5, size: 54, at: 1, color: accent, font: serif_bold,
+         short: {y: 0.25}}
+      - {text: '1999년 10월 문을 연 사이트', x: 0.72, y: 0.62, size: 40, at: 0, short: {y: 0.33}}
+      - {text: '카메라 정보 · 리뷰 · 직접 찍은 사진', x: 0.72, y: 0.72, size: 36, at: 2, color: muted,
+         short: {y: 0.4}}
+    say:
+      - say: 디시인사이드라는 사이트, 들어 보셨을 겁니다. 천구백구십구 년 십 월, 김유식 씨가 문을 연 사이트로 알려져 있죠.
+        sub: 디시인사이드라는 사이트, 들어 보셨을 겁니다. 1999년 10월, 김유식 씨가 문을 연 사이트로 알려져 있죠.
+      - say: 디시는 원래 디지털카메라를 줄인 말입니다. 처음 이름이 디지털 카메라 인사이드였다고 하거든요.
+        sub: ‘디시’는 원래 디지털카메라를 줄인 말입니다. 처음 이름이 ‘Digital Camera Inside’였다고 하거든요.
+      - 디지털카메라가 막 퍼지던 때, 카메라 정보와 리뷰, 사용자가 직접 찍은 사진을 올리는 곳이었다고 합니다.
+
+  - type: tableau
+    title: 사진을 거는 곳, 갤러리
+    layers:
+      - {img: 'icon:framed_picture', x: 0.27, y: 0.45, size: 300, at: 0, motion: float}
+    texts:
+      - {text: '갤러리 (gallery)', x: 0.66, y: 0.34, size: 80, at: 0, font: serif_bold}
+      - {text: '미술품을 진열·전시하는 곳', x: 0.66, y: 0.5, size: 46, at: 0, color: accent, font: serif_bold}
+      - {text: '사진을 올리는 게시판이라 이름도 ‘갤러리’', x: 0.66, y: 0.66, size: 38, at: 1}
+    say:
+      - 그래서 게시판 이름도 갤러리였습니다. 갤러리는 원래, 미술품을 진열하고 전시하는 곳이죠.
+      - 사진을 올리는 곳이라는 특성에서, 게시판마다 무슨 무슨 갤러리라는 이름이 붙었다고 합니다.
+
+  - type: tableau
+    title: 사진 없는 글은?
+    layers:
+      - {img: 'custom:post_text_only', x: 0.25, y: 0.45, size: 330, at: 0, motion: pop}
+      - {img: 'icon:wastebasket', x: 0.75, y: 0.45, size: 260, at: 1, motion: pop}
+    texts:
+      - {text: →, x: 0.5, y: 0.45, size: 120, at: 1, color: accent, font: serif_bold}
+      - {text: 사진 없이 글만, x: 0.25, y: 0.82, size: 50, at: 0, font: serif_bold}
+      - {text: '신고 사유: 사진 없음', x: 0.75, y: 0.82, size: 50, at: 1, color: accent, font: serif_bold}
+    say:
+      - 사진을 올리는 곳이다 보니, 규칙도 있었습니다. 글을 쓰려면 사진을 꼭 한 장 이상 붙여야 했다고 하죠.
+      - 사진 없이 글만 올리면, 사진 없음이라는 이유로 신고를 당해, 글이 지워질 수 있었다고 합니다.
+
+  # ================================================================ 3. 짤방의 탄생
+  - type: chapter
+    chapter: 짤방의 탄생
+    num: 3
+    title: 짤방의 탄생
+    icon: icon:framed_picture
+    subtitle: 지워지지 않으려고 붙인 사진
+    say:
+      - 그런데 하고 싶은 말이, 늘 사진과 관련 있는 건 아니잖아요.
+
+  - type: tableau
+    title: 아무 사진이나 한 장
+    layers:
+      - {img: 'custom:post_text_only', x: 0.25, y: 0.45, size: 330, at: 0, motion: pop}
+      - {img: 'custom:post_with_photo', x: 0.75, y: 0.45, size: 330, at: 1, motion: pop}
+    texts:
+      - {text: →, x: 0.5, y: 0.45, size: 120, at: 1, color: accent, font: serif_bold}
+      - {text: 지워질 글, x: 0.25, y: 0.82, size: 50, at: 0, font: serif_bold}
+      - {text: '글과 상관없는 사진 = 짤방', x: 0.75, y: 0.82, size: 50, at: 2, color: accent, font: serif_bold}
+    say:
+      - say: 그래서 이천이 년 후반 무렵부터, 사용자들은 글이 지워지지 않게, 인터넷에서 가져온 아무 사진이나 글에 붙이기 시작했다고 합니다.
+        sub: 그래서 2002년 후반 무렵부터, 사용자들은 글이 지워지지 않게, 인터넷에서 가져온 아무 사진이나 글에 붙이기 시작했다고 합니다.
+      - 글 내용과는 상관없는 사진이지만, 이 사진 한 장만 있으면 글이 잘리지 않았던 거죠.
+      - say: 이렇게 짤림을 막으려고 붙인 사진, 짤림 방지 사진을 줄여서, 짤방이라고 불렀습니다.
+        sub: 이렇게 짤림을 막으려고 붙인 사진, ‘짤림 방지’ 사진을 줄여서, ‘짤방’이라고 불렀습니다.
+      - 다만 누가 처음 짤방이라는 말을 썼는지는, 확인할 수 있는 자료가 없습니다.
+
+  # ================================================================ 4. 짤방에서 짤로
+  - type: chapter
+    chapter: 짤방에서 짤로
+    num: 4
+    title: 짤방에서 짤로
+    icon: icon:mobile_phone
+    subtitle: 뜻은 넓어지고, 말은 짧아지고
+    say:
+      - 이 짤방이, 지금의 짤이 됩니다.
+
+  - type: chain
+    title: '뜻도 말도 바뀌다'
+    icon: icon:mobile_phone
+    steps:
+      - {lang: '2002년 무렵', word: 짤방, reading: '= 잘림을 막는 사진'}
+      - {lang: 그 뒤, word: 짤방, reading: '= 재미있는 사진'}
+      - {lang: 지금, word: 짤, reading: '= 인터넷의 사진·그림'}
+    reveal: [0, 1, 2]
+    say:
+      - 시간이 지나면서, 짤방은 글이 잘리지 않게 붙이는 사진이라는 뜻이 옅어졌습니다.
+      - 대신 눈길을 끄는 재미있는 사진을 가리키게 되었고, 말도 줄어서 짤이 되었죠.
+      - say: 그래서 우리말샘에는 지금 짤이, 주로 인터넷에서 사진이나 그림 따위를 이르는 말로 실려 있습니다.
+        sub: 그래서 우리말샘에는 지금 ‘짤’이, 주로 인터넷에서 사진이나 그림 따위를 이르는 말로 실려 있습니다.
+
+  - type: tableau
+    title: 가지를 친 짤
+    layers:
+      - {img: 'icon:face_with_tears_of_joy', x: 0.3, y: 0.42, size: 240, at: 0, motion: float}
+      - {img: 'icon:film_frames', x: 0.7, y: 0.42, size: 240, at: 0.4, motion: float}
+    texts:
+      - {text: 웃짤, x: 0.3, y: 0.72, size: 96, at: 0, font: serif_bold}
+      - {text: = 웃긴 짤, x: 0.3, y: 0.86, size: 46, at: 0, color: accent, font: serif_bold}
+      - {text: 움짤, x: 0.7, y: 0.72, size: 96, at: 0.4, font: serif_bold}
+      - {text: = 움직이는 짤, x: 0.7, y: 0.86, size: 46, at: 0.4, color: accent, font: serif_bold}
+    say:
+      - 짤은 다른 말과 붙어 가지를 치기도 했습니다. 웃긴 짤은 웃짤, 움직이는 짤은 움짤이라고 하죠.
+
+  - type: tableau
+    title: 사전에 실린 짤
+    layers:
+      - {img: 'icon:newspaper', x: 0.22, y: 0.45, size: 280, at: 0, motion: float}
+    texts:
+      - {text: '‘짤’ 한 장으로', x: 0.63, y: 0.34, size: 72, at: 0, font: serif_bold}
+      - {text: '스타덤을 형성하기도', x: 0.63, y: 0.48, size: 72, at: 0, font: serif_bold}
+      - {text: '스포츠경향 2016년 4월 · 우리말샘 용례', x: 0.63, y: 0.64, size: 36, at: 0, color: muted}
+    say:
+      - say: 이천십육 년 한 신문 기사에는, 짤 한 장으로 스타덤을 형성하기도 한다는 문장이 나오는데, 이 문장이 우리말샘에 짤의 쓰임 예로 실렸습니다.
+        sub: 2016년 한 신문 기사에는, ‘짤 한 장으로 스타덤을 형성하기도 한다’는 문장이 나오는데, 이 문장이 우리말샘에 ‘짤’의 쓰임 예로 실렸습니다.
+      - 글이 지워지지 않게 덤으로 붙이던 사진이, 이제는 그 자체로 주인공이 된 셈이죠.
+
+  # ================================================================ 덤
+  - type: tableau
+    title: '덤: 북한의 ‘짤방’'
+    layers:
+      - {img: 'icon:droplet', x: 0.25, y: 0.45, size: 260, at: 0, motion: float}
+    texts:
+      - {text: '짤방 (북한어)', x: 0.64, y: 0.34, size: 80, at: 0, font: serif_bold}
+      - {text: '작은 물방울 따위가', x: 0.64, y: 0.5, size: 50, at: 0, color: accent, font: serif_bold}
+      - {text: '한 번 떨어지는 소리', x: 0.64, y: 0.6, size: 50, at: 0, color: accent, font: serif_bold}
+      - {text: '우리가 쓰는 ‘짤방’과는 다른 말', x: 0.64, y: 0.75, size: 36, at: 1, color: muted}
+    say:
+      - say: 덤으로 하나 더. 우리말샘에는 북한어 짤방도 실려 있습니다. 작은 물방울 따위가 한 번 떨어지는 소리나 그 모양을 나타내는 말이죠.
+        sub: 덤으로 하나 더. 우리말샘에는 북한어 ‘짤방’도 실려 있습니다. 작은 물방울 따위가 한 번 떨어지는 소리나 그 모양을 나타내는 말이죠.
+      - 소리만 같을 뿐, 우리가 쓰는 짤방과는 따로 실린 다른 말입니다.
+
+  # ================================================================ 정리
+  - type: summary
+    chapter: 정리
+    title: 오늘 해체한 말
+    rows:
+      - {word: 짤방, icon: 'custom:post_with_photo', path: '짤(짤리다) + 防 = 잘림 방지 사진', at: 0}
+      - {word: 짤, icon: 'icon:framed_picture', path: '짤방 → 짤 (인터넷의 사진·그림)', at: 0}
+      - {word: 움짤, icon: 'icon:film_frames', path: '움직이는 + 짤', at: 1}
+    say:
+      - say: 정리하면, 짤은 짤방, 곧 잘림 방지에서 나온 말입니다.
+        sub: 정리하면, ‘짤’은 ‘짤방’, 곧 ‘잘림 방지’에서 나온 말입니다.
+      - 사진 없는 글을 지우던 한 사이트의 규칙이, 지금 우리가 매일 쓰는 말 하나를 만든 셈이죠.
+
+  - type: sources
+    title: 참고 자료
+    sources:
+      - 국립국어원 우리말샘 · 표준국어대사전
+      - 한국어 위키백과 '디시인사이드', '짤방'
+      - '카메라 사진 David Wright (CC BY 2.0) · 디시인사이드 로고 (Wikimedia Commons)'
+      - 'Fluent Emoji (Microsoft, MIT)'
+    say:
+      - 오늘 이야기는 여기까지입니다. 시청해 주셔서 감사합니다.
+
+  - type: outro
+    name: 단어해체소
+    accent_from: 2
+    hold: 10
+
+# ==================================================================== 쇼츠 (홍보용)
+shorts:
+  kicker: 단어해체소
+  header: '‘짤’은 원래 무슨 뜻?'
+  scenes:
+    - type: hook
+      word: 짤
+      icon: icon:framed_picture
+      icon_at: 0.2
+      reveal: 잘림 방지
+      reveal_at: 0.4
+      say:
+        - 매일 쓰는 짤, 원래는 잘림 방지라는 뜻이었다는 거 아세요?
+
+    - type: tableau
+      layers:
+        - {img: 'custom:post_text_only', x: 0.5, y: 0.3, size: 380, at: 0, motion: pop}
+        - {img: 'icon:wastebasket', x: 0.5, y: 0.72, size: 300, at: 1, motion: pop}
+      texts:
+        - {text: '사진 없음 → 삭제', x: 0.5, y: 0.52, size: 60, at: 1, color: accent, font: serif_bold}
+      say:
+        - 디시인사이드에선 예전에, 사진 없이 글만 올리면,
+        - 사진 없음이라는 이유로 신고를 당해 지워질 수 있었다고 합니다.
+
+    - type: tableau
+      layers:
+        - {img: 'custom:post_with_photo', x: 0.5, y: 0.34, size: 420, at: 0, motion: pop}
+      texts:
+        - {text: 짤림 방지, x: 0.5, y: 0.66, size: 80, at: 0, font: serif_bold}
+        - {text: '→ 짤방 → 짤', x: 0.5, y: 0.78, size: 80, at: 1, color: accent, font: serif_bold}
+      say:
+        - say: 그래서 글이 잘리지 않게 아무 사진이나 붙였는데, 이걸 짤림 방지, 짤방이라 불렀고,
+          sub: 그래서 글이 잘리지 않게 아무 사진이나 붙였는데, 이걸 ‘짤림 방지’, ‘짤방’이라 불렀고,
+        - 이 말이 줄어서 지금의 짤이 되었죠.

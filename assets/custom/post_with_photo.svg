@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="16 8 224 240">
+  <!-- 사진을 붙인 게시글: 본문 아래에 글과 상관없는 사진(풍경) 한 장 -->
+  <rect x="28" y="20" width="200" height="216" rx="14" fill="#F4F5F7"/>
+  <path d="M28 34 Q28 20 42 20 L214 20 Q228 20 228 34 L228 48 L28 48 Z" fill="#3D63B8"/>
+  <circle cx="46" cy="34" r="5" fill="#FFFFFF" opacity="0.8"/><circle cx="62" cy="34" r="5" fill="#FFFFFF" opacity="0.6"/>
+  <rect x="44" y="62" width="128" height="12" rx="6" fill="#2B2F36"/>
+  <rect x="44" y="84" width="168" height="7" rx="3.5" fill="#B4BAC4"/>
+  <rect x="44" y="98" width="150" height="7" rx="3.5" fill="#B4BAC4"/>
+  <rect x="44" y="112" width="160" height="7" rx="3.5" fill="#B4BAC4"/>
+  <!-- 붙인 사진 -->
+  <clipPath id="ph"><rect x="44" y="132" width="168" height="88" rx="8"/></clipPath>
+  <g clip-path="url(#ph)">
+    <rect x="44" y="132" width="168" height="88" fill="#8FD0F5"/>
+    <circle cx="178" cy="156" r="12" fill="#FFD54A"/>
+    <path d="M44 206 L86 160 L116 192 L140 172 L212 214 L212 220 L44 220 Z" fill="#4E9A55"/>
+    <path d="M44 220 L44 204 Q120 192 212 210 L212 220 Z" fill="#3B7D41"/>
+    <path d="M86 160 L76 171 L86 168 L96 171 Z" fill="#FFFFFF"/>
+  </g>
+  <rect x="44" y="132" width="168" height="88" rx="8" fill="none" stroke="#2B2F36" stroke-width="3"/>
+</svg>

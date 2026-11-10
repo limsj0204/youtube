@@ -51,6 +51,8 @@ python3 -m ytmaker.build episodes/001_portuguese_words/script.yaml --preview
 | `summary`, `sources`, `cta` | 정리, 참고 자료, 쇼츠에서 본편으로 유도 |
 | `tableau` | 그림 여러 장을 배치해 상황을 보여주는 장면 (밀려 들어오기, 떠다니기, 확대 등 움직임) |
 
+실제 사진·로고는 `assets/photos/`에 두고 `photo:파일.jpg`(흰 테두리 액자), `logo:이름`(흰 판 위, SVG)으로 씁니다. tableau 그림에 `credit:`을 적으면 그림 아래에 작은 출처가 나옵니다. 출처와 라이선스는 `assets/photos/SOURCE.txt`와 대본의 `credits`에 함께 적습니다.
+
 `at`, `reveal`, `start`, `end` 값은 **몇 번째 문장(0부터)에서 등장할지**를 뜻합니다. 소수도 쓸 수 있습니다(1.5 = 1번 문장의 중간).
 
 ### 스타일(테마)

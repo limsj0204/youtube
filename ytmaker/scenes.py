@@ -714,6 +714,7 @@ class Tableau(Scene):
         until: 1                 # slide 가 끝나는 문장 번호 (기본: at 문장 끝)
         flip: false
         short: {x: 0.5, y: 0.3}  # 세로(쇼츠) 화면에서만 덮어쓸 값
+        credit: '사진 David Wright, CC BY 2.0'   # 실제 사진·로고 아래 작은 출처 (선택)
     texts:
       - {text: 남만인, x: 0.5, y: 0.9, size: 56, at: 0, color: accent, font: serif_bold}
     """
@@ -754,6 +755,10 @@ class Tableau(Scene):
                 rot = ly.get("tilt", 0) * (1 - a)
             A.place(img, ly["img"], (x, y), size, a * ly.get("alpha", 1.0), flip=ly.get("flip", False),
                     rotate=rot)
+            if ly.get("credit"):
+                # 실제 사진·로고 아래 작은 출처 표기
+                ih = A.image(ly["img"], int(round(size / 2) * 2)).height
+                draw_text(img, (x, y + ih / 2 + 22 * L.s), ly["credit"], font("sans", 22 * L.s), S.MUTED, a * 0.9)
         for tx in d.get("texts", []):
             tx = {**tx, **(tx.get("short", {}) if L.short else {})}
             a = c.p(tx.get("at", 0), 0.5)

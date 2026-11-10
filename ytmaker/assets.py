@@ -4,6 +4,8 @@
     icon:bread       → assets/icons/bread.svg      (Fluent Emoji, MIT)
     flag:pt          → assets/flags/pt.svg         (flag-icons, MIT)
     custom:carrack   → assets/custom/carrack.svg   (이 저장소에서 직접 그림)
+    photo:a.jpg      → assets/photos/a.jpg         (실제 사진: 둥근 모서리 + 흰 테두리, 출처는 SOURCE.txt)
+    logo:dcinside    → assets/photos/dcinside.svg  (로고: 흰 판 위에 올림, 출처는 SOURCE.txt)
     episodes/.../img/scene1.png                   → 그 밖의 경로는 파일 그대로 (AI 이미지 등)
 """
 import io
@@ -22,6 +24,10 @@ def resolve(name):
         kind, key = name.split(":", 1)
         if kind in PREFIX:
             return ROOT / PREFIX[kind] / f"{key}.svg"
+        if kind == "photo":
+            return ROOT / "assets/photos" / key
+        if kind == "logo":
+            return ROOT / "assets/photos" / f"{key}.svg"
     return ROOT / name
 
 
@@ -41,9 +47,37 @@ def image(name, size, flip=False):
     im = im.resize((max(1, int(w * k)), max(1, int(h * k))), Image.LANCZOS)
     if name.startswith("flag:"):
         im = _flag_style(im)
+    elif name.startswith("photo:"):
+        im = _photo_style(im)
+    elif name.startswith("logo:"):
+        im = _logo_style(im)
     if flip:
         im = im.transpose(Image.FLIP_LEFT_RIGHT)
     return im
+
+
+def _photo_style(im):
+    """실제 사진: 흰 테두리 + 둥근 모서리 (어두운 배경 위에서 '사진'으로 읽히게)."""
+    w, h = im.size
+    b = max(3, int(max(w, h) * 0.018))
+    r = max(3, int(min(w, h) * 0.04))
+    out = Image.new("RGBA", (w + b * 2, h + b * 2), (0, 0, 0, 0))
+    ImageDraw.Draw(out).rounded_rectangle((0, 0, out.width - 1, out.height - 1), r + b, fill=(242, 242, 238, 255))
+    mask = Image.new("L", (w, h), 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, w - 1, h - 1), r, fill=255)
+    out.paste(im, (b, b), mask)
+    return out
+
+
+def _logo_style(im):
+    """로고: 원래 색이 어두운 배경에 묻히지 않게 흰 판 위에 올린다."""
+    w, h = im.size
+    px, py = int(w * 0.08), int(h * 0.22)
+    out = Image.new("RGBA", (w + px * 2, h + py * 2), (0, 0, 0, 0))
+    ImageDraw.Draw(out).rounded_rectangle((0, 0, out.width - 1, out.height - 1),
+                                          int(min(out.size) * 0.18), fill=(250, 250, 250, 255))
+    out.alpha_composite(im, (px, py))
+    return out
 
 
 def _flag_style(im):
