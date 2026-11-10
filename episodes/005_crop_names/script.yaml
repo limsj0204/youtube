@@ -16,6 +16,7 @@ voice:
   engine: elevenlabs
   name: CYbONFCmQ856BE6N5Cqt
   model: eleven_multilingual_v2
+  split_e: true           # '고구마에'를 '고구매'처럼 합쳐 읽지 않게 '에' 앞을 띄움
 voice_fx: soft
 bgm:
   file: bgm/bgm.mp3

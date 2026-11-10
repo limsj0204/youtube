@@ -99,9 +99,25 @@ def _store_save(key, x):
                    input=pcm, check=True)
 
 
+def split_e(text):
+    """받침 없이 'ㅏ·ㅓ·ㅗ'로 끝나는 글자 뒤의 조사 '에'를 띄운다 (고구마에 → 고구마 에).
+    ElevenLabs 가 '마+에'를 '매'처럼 한 음절로 합쳐 읽는 것을 막는다. 자막에는 영향 없음."""
+    def vowel_end(ch):
+        o = ord(ch) - 0xAC00
+        return 0 <= o < 11172 and o % 28 == 0 and (o % 588) // 28 in (0, 4, 8)
+    out = []
+    for i, ch in enumerate(text):
+        if ch == "에" and i > 0 and vowel_end(text[i - 1]):
+            out.append(" ")
+        out.append(ch)
+    return "".join(out)
+
+
 def synthesize(text, speed=1.0, prev="", nxt=""):
     """prev/nxt: 앞뒤 문장. ElevenLabs 에 함께 보내면 문장 사이 억양이 이어진다."""
     text = clean(text)
+    if VOICE.get("split_e"):
+        text = split_e(text)      # 앞뒤 문장(ctx)은 그대로 두어, 바뀐 문장만 새로 만든다
     ctx = (clean(prev), clean(nxt)) if VOICE["engine"] == "elevenlabs" and VOICE.get("context", True) else ("", "")
     key = _key(text, speed, ctx)
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
