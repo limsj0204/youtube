@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="16 16 224 224">
+  <!-- 손으로 쥐는 옛날식 바리캉: 위쪽 빗 모양 날, 아래로 벌어진 두 손잡이 -->
+  <ellipse cx="128" cy="230" rx="70" ry="8" fill="#000000" opacity="0.18"/>
+  <!-- 날 받침 -->
+  <path d="M60 52 L196 52 Q206 52 206 62 L206 86 Q206 96 196 96 L60 96 Q50 96 50 86 L50 62 Q50 52 60 52 Z" fill="#8E99A8"/>
+  <path d="M60 52 L196 52 Q206 52 206 62 L206 70 L50 70 L50 62 Q50 52 60 52 Z" fill="#B7C1CE"/>
+  <!-- 빗살 날 -->
+  <g fill="#D9E0E8">
+    <path d="M56 52 L60 30 L66 52 Z"/><path d="M70 52 L74 30 L80 52 Z"/><path d="M84 52 L88 30 L94 52 Z"/>
+    <path d="M98 52 L102 30 L108 52 Z"/><path d="M112 52 L116 30 L122 52 Z"/><path d="M126 52 L130 30 L136 52 Z"/>
+    <path d="M140 52 L144 30 L150 52 Z"/><path d="M154 52 L158 30 L164 52 Z"/><path d="M168 52 L172 30 L178 52 Z"/>
+    <path d="M182 52 L186 30 L192 52 Z"/><path d="M196 52 L200 30 L204 52 Z"/>
+  </g>
+  <!-- 가운데 나사 -->
+  <circle cx="128" cy="84" r="9" fill="#5C6878"/><circle cx="128" cy="84" r="3.5" fill="#B7C1CE"/>
+  <!-- 손잡이 연결부 -->
+  <path d="M104 96 L152 96 L146 120 L110 120 Z" fill="#6E7A8A"/>
+  <!-- 두 손잡이 -->
+  <path d="M110 116 Q98 150 74 204 Q70 214 80 218 Q90 220 94 210 Q118 160 128 122 Z" fill="#2F3A48"/>
+  <path d="M146 116 Q158 150 182 204 Q186 214 176 218 Q166 220 162 210 Q138 160 128 122 Z" fill="#3E4A5A"/>
+  <path d="M114 126 Q104 156 86 200" stroke="#56657A" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M142 126 Q152 156 170 200" stroke="#5E6C80" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <!-- 손잡이 사이 용수철 -->
+  <path d="M112 148 q8 -6 16 0 q8 6 16 0" stroke="#C9D1DC" stroke-width="4" fill="none" stroke-linecap="round"/>
+</svg>

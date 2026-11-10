@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="16 24 224 224">
+  <!-- 투명 접착테이프 한 롤: 종이 심, 투명한 테이프 겹, 풀려 나온 끝 -->
+  <ellipse cx="128" cy="226" rx="84" ry="10" fill="#000000" opacity="0.18"/>
+  <!-- 바깥 테이프 몸통 (옆면) -->
+  <ellipse cx="120" cy="150" rx="84" ry="70" fill="#CFE6F2" opacity="0.95"/>
+  <ellipse cx="120" cy="150" rx="84" ry="70" fill="none" stroke="#A9CFE2" stroke-width="3"/>
+  <ellipse cx="120" cy="150" rx="70" ry="58" fill="none" stroke="#B9DAEA" stroke-width="2" opacity="0.8"/>
+  <ellipse cx="120" cy="150" rx="58" ry="48" fill="none" stroke="#B9DAEA" stroke-width="2" opacity="0.8"/>
+  <!-- 종이 심 -->
+  <ellipse cx="120" cy="150" rx="44" ry="36" fill="#E3B979"/>
+  <ellipse cx="120" cy="150" rx="34" ry="27" fill="#16181C"/>
+  <ellipse cx="120" cy="150" rx="44" ry="36" fill="none" stroke="#C89A57" stroke-width="3"/>
+  <!-- 반짝임 -->
+  <path d="M60 116 Q76 92 104 84" stroke="#FFFFFF" stroke-width="7" fill="none" stroke-linecap="round" opacity="0.7"/>
+  <!-- 풀려 나온 끝 -->
+  <path d="M196 170 Q214 196 236 204 L230 222 Q204 214 184 186 Z" fill="#CFE6F2" opacity="0.95"/>
+  <path d="M230 222 l4 -6 l4 4 l2 -8" stroke="#A9CFE2" stroke-width="2.5" fill="none"/>
+</svg>

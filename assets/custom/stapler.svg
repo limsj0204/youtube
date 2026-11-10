@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="8 40 240 200">
+  <!-- 스테이플러(호치키스): 옆에서 본 모습, 살짝 열린 윗판, 앞에 침 몇 개 -->
+  <ellipse cx="128" cy="214" rx="104" ry="10" fill="#000000" opacity="0.2"/>
+  <!-- 바닥판 -->
+  <path d="M28 196 L212 196 Q228 196 228 186 L228 180 L28 180 Z" fill="#3D4A5C"/>
+  <path d="M28 180 L228 180 L228 186 L28 186 Z" fill="#56657A"/>
+  <rect x="168" y="172" width="44" height="10" rx="3" fill="#B9C2CF"/>
+  <!-- 경첩 -->
+  <circle cx="48" cy="158" r="16" fill="#2C3644"/>
+  <circle cx="48" cy="158" r="6" fill="#8A96A8"/>
+  <!-- 침 넣는 통 (가운데 금속) -->
+  <path d="M52 146 L214 136 L214 152 L52 166 Z" fill="#AEB8C6"/>
+  <path d="M52 160 L214 148 L214 152 L52 166 Z" fill="#7F8B9C"/>
+  <!-- 윗판 (빨간 덮개) -->
+  <path d="M36 150 Q34 122 62 116 L206 98 Q232 96 236 118 L236 128 Q234 138 220 140 L60 158 Q40 160 36 150 Z" fill="#D7372B"/>
+  <path d="M60 120 L206 102 Q226 101 230 114 L66 132 Q54 133 60 120 Z" fill="#F0574A"/>
+  <path d="M40 150 Q42 156 60 156 L220 138 Q230 136 234 128 L234 132 Q232 140 220 142 L60 160 Q42 162 40 150 Z" fill="#A82519"/>
+  <!-- 앞에 놓인 침 -->
+  <g fill="none" stroke="#C9D1DC" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M150 226 L150 216 L184 216 L184 226"/>
+    <path d="M196 230 L198 220 L230 224 L228 234"/>
+  </g>
+</svg>
