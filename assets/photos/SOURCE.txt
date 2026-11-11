@@ -21,3 +21,9 @@ potatoes.jpg  (5편 썸네일)
   원본: https://commons.wikimedia.org/wiki/File:Patates.jpg (1280px 축소본)
   촬영: Scott Bauer, 미국 농무부 농업연구청(USDA ARS), 사진 번호 K9152-1
   라이선스: 퍼블릭 도메인 (미국 연방 정부 저작물). 설명란에 촬영자를 적어 두면 좋다
+
+sweet_potatoes.jpg  (5편 썸네일)
+  원본: https://commons.wikimedia.org/wiki/File:Loose_sweet_potatoes.jpg (960px 축소본)
+  촬영: Tessa Bury
+  라이선스: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+  썸네일에서는 잘라 내고 어둡게 조정해 씀 → 설명란에 촬영자·라이선스를 적는다

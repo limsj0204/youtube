@@ -34,6 +34,8 @@ sources:
   - 박현수, 「감자와 고구마의 거리 - 김동인의 「감자」 재독」, 『민족문학사연구』 63, 2017
 
 credits:
+  - '썸네일 감자 사진: Scott Bauer, USDA ARS (퍼블릭 도메인) https://commons.wikimedia.org/wiki/File:Patates.jpg'
+  - '썸네일 고구마 사진: "Loose sweet potatoes" Tessa Bury, CC BY 4.0 (Wikimedia Commons) https://commons.wikimedia.org/wiki/File:Loose_sweet_potatoes.jpg'
   - 일러스트 Fluent Emoji (Microsoft, MIT 라이선스), 후추 그림은 직접 그림
   - 지도 Natural Earth (퍼블릭 도메인)
   - 글꼴 Pretendard (SIL OFL), Noto Sans CJK (SIL OFL)
@@ -46,7 +48,9 @@ fact_check:
 thumbnail:
   big: 감자
   lines: ['원래는 고구마?', '고추는 원래 후추?']
-  bg_text: 甘藷
+  photo:                  # 왼쪽 감자 사진, 오른쪽 고구마 사진 (글자 뒤라 더 어둡게)
+    - {file: assets/photos/sweet_potatoes.jpg, focus: [0.6, 0.5], width: 760, dim: 0.32, side: right}
+    - {file: assets/photos/potatoes.jpg, focus: [0.35, 0.5], width: 700, dim: 0.5}
   caption: 이름이 옮겨 간 작물들
   badge: 단어해체소
 
