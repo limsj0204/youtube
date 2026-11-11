@@ -16,3 +16,8 @@ dcinside.png  (6편 '짤' 2장)
   원본: https://commons.wikimedia.org/wiki/File:Dcinside.com_logo.svg (960px PNG 축소본)
   라이선스: 퍼블릭 도메인 (Commons 표기, 단순한 글자 로고), 등록 상표
   디시인사이드를 가리키는 용도로만 쓴다
+
+potatoes.jpg  (5편 썸네일)
+  원본: https://commons.wikimedia.org/wiki/File:Patates.jpg (1280px 축소본)
+  촬영: Scott Bauer, 미국 농무부 농업연구청(USDA ARS), 사진 번호 K9152-1
+  라이선스: 퍼블릭 도메인 (미국 연방 정부 저작물). 설명란에 촬영자를 적어 두면 좋다

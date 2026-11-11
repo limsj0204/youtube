@@ -228,7 +228,9 @@ def thumbnail(ep, path):
         base.putalpha(base.getchannel("A").point(lambda v: int(v * 0.55)))
         img.paste(base, (0, 0), base)
     if th.get("photo"):
-        _thumb_photo(img, th["photo"])
+        # 사진 한 장(dict) 또는 여러 장(list). side: left(기본) | right
+        for ph in (th["photo"] if isinstance(th["photo"], list) else [th["photo"]]):
+            _thumb_photo(img, ph)
     for bi in th.get("bg_images", []):
         # 배경 그림: 주제 사물을 크게, 살짝 기울이고 어둡게 깐다
         #   bg_images: [{img: icon:potato, x: 180, y: 560, size: 420, alpha: 0.35, rotate: -12}]
@@ -296,7 +298,8 @@ def thumbnail(ep, path):
 
 def _thumb_photo(img, ph):
     """왼쪽 큰 글자 뒤에 사진을 어둡게 깔고, 오른쪽 글자 쪽으로 갈수록 사라지게.
-    photo: {file: assets/photos/x.jpg, focus: [0.5, 0.5], width: 780, dim: 0.5}"""
+    photo: {file: assets/photos/x.jpg, focus: [0.5, 0.5], width: 780, dim: 0.5}
+    side: right 이면 오른쪽 끝에 깔고 왼쪽으로 갈수록 사라지게 (글자 뒤라 dim 을 더 낮게)."""
     from PIL import Image, ImageEnhance
     W, H = img.size
     src = Image.open(Path(__file__).resolve().parent.parent / ph["file"]).convert("RGB")
@@ -312,7 +315,11 @@ def _thumb_photo(img, ph):
     for x in range(pw - fade, pw):
         a = int(255 * (pw - x) / fade)
         mask.paste(a, (x, 0, x + 1, H))
-    img.paste(crop, (0, 0), mask)
+    if ph.get("side") == "right":
+        from PIL import ImageOps
+        img.paste(crop, (W - pw, 0), ImageOps.mirror(mask))
+    else:
+        img.paste(crop, (0, 0), mask)
 
 
 def main(argv=None):
