@@ -47,7 +47,8 @@ fact_check:
 thumbnail:
   big: 짤
   lines: ['잘라 낸 사진?', '아니, ‘잘림 방지’']
-  bg_text: 防
+  bg_images:              # 디시인사이드 로고를 가운데에 크게, 흐리게 (글자에 자연스럽게 가려지게)
+    - {img: assets/photos/dcinside.png, x: 640, y: 462, size: 1180, alpha: 0.14, tint: ink}
   caption: 디시인사이드에서 태어난 말
   badge: 단어해체소
 
