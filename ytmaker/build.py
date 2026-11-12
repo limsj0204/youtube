@@ -234,13 +234,21 @@ def thumbnail(ep, path):
     for bi in th.get("bg_images", []):
         # 배경 그림: 주제 사물을 크게, 살짝 기울이고 어둡게 깐다
         #   bg_images: [{img: icon:potato, x: 180, y: 560, size: 420, alpha: 0.35, rotate: -12}]
+        #   tint: ink 이면 그림을 한 색으로 칠함 (검은 로고를 어두운 배경에 흐리게 깔 때)
         from . import assets as A
         from PIL import Image
         im = A.image(bi["img"], int(bi.get("size", 400)))
         if bi.get("rotate"):
             im = im.rotate(bi["rotate"], expand=True, resample=Image.BICUBIC)
-        dark = Image.new("RGBA", im.size, (0, 0, 0, 255))
-        im = Image.blend(im, dark, 1 - bi.get("bright", 0.75))
+        if bi.get("tint"):
+            # 검은 글자 로고 등: 모양만 살리고 한 가지 색(ink, accent 등)으로 칠한다
+            col = getattr(S, bi["tint"].upper())
+            solid = Image.new("RGBA", im.size, col + (255,))
+            solid.putalpha(im.getchannel("A"))
+            im = solid
+        else:
+            dark = Image.new("RGBA", im.size, (0, 0, 0, 255))
+            im = Image.blend(im, dark, 1 - bi.get("bright", 0.75))
         im.putalpha(im.getchannel("A").point(lambda v, a=bi.get("alpha", 0.35): int(v * a)))
         img.alpha_composite(im, (int(bi["x"] - im.width / 2), int(bi["y"] - im.height / 2))) \
             if img.mode == "RGBA" else img.paste(im, (int(bi["x"] - im.width / 2), int(bi["y"] - im.height / 2)), im)
