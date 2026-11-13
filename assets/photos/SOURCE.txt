@@ -27,3 +27,9 @@ sweet_potatoes.jpg  (5편 썸네일)
   촬영: Tessa Bury
   라이선스: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
   썸네일에서는 잘라 내고 어둡게 조정해 씀 → 설명란에 촬영자·라이선스를 적는다
+
+paranal_planets.jpg  (7편 썸네일)
+  원본: https://commons.wikimedia.org/wiki/File:Planetary_conjunction_over_Paranal_(conjunction-paranal).jpg (1280px 축소본)
+  촬영: G. Hüdepohl (atacamaphoto.com)/ESO, 2011년 5월 1일 새벽 칠레 파라날 VLT
+  내용: 가는 초승달 오른쪽에 금성, 수성, 목성, 화성 (Commons 설명 기준)
+  라이선스: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/) → 설명란에 촬영자·라이선스를 적는다

@@ -34,6 +34,7 @@ sources:
   - 영어 위키백과 'Names of the days of the week', 'Planetary hours' · 일본어 위키백과 '曜日' · 한국어 위키백과 '요일'
 
 credits:
+  - '썸네일 사진: "Planetary conjunction over Paranal" G. Hüdepohl (atacamaphoto.com)/ESO, CC BY 4.0 (Wikimedia Commons) https://commons.wikimedia.org/wiki/File:Planetary_conjunction_over_Paranal_(conjunction-paranal).jpg'
   - 일러스트 Fluent Emoji (Microsoft, MIT 라이선스)
   - 지도 Natural Earth (퍼블릭 도메인)
   - 글꼴 Pretendard (SIL OFL), Noto Sans CJK (SIL OFL)
@@ -48,7 +49,8 @@ fact_check:
 thumbnail:
   big: 요일
   lines: ['월화수목금토일', '이름에 숨은 일곱 별']
-  bg_text: 七曜
+  photo:                  # 칠레 파라날 새벽하늘의 달과 행성 넷 (달이 '요일'과 오른쪽 글 사이에 오게)
+    {file: assets/photos/paranal_planets.jpg, focus: [0.53, 0.5], width: 1008, dim: 0.85}
   caption: 해, 달, 그리고 다섯 행성
   badge: 단어해체소
 
