@@ -263,8 +263,9 @@ class Chain(Scene):
                 wx, wy, ry = bx + bw / 2, by + bh / 2 + 5 * L.s, by + bh - 55 * L.s
                 max_word_w = bw - 50 * L.s
             tag_col = S.ACCENT if cur else S.CARD_EDGE
-            S.rounded_box(img, (lx - tw / 2, ly - 26 * L.s, lx + tw / 2, ly + 26 * L.s),
-                          int(26 * L.s), tag_col, alpha=a)
+            if lang or badge:   # 이름표가 비어 있으면 빈 칸을 그리지 않는다
+                S.rounded_box(img, (lx - tw / 2, ly - 26 * L.s, lx + tw / 2, ly + 26 * L.s),
+                              int(26 * L.s), tag_col, alpha=a)
             shift = (bw_ + 12 * L.s) / 2 if badge else 0
             if badge:
                 A.place(img, badge, (lx - tw / 2 + 18 * L.s + bw_ / 2, ly), bw_, a, shadow=False)
